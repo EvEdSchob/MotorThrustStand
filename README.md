@@ -10,4 +10,4 @@ This is the software component of a Raspberry Pi based thrust stand for testing 
 
 
 ## PCB
-Gerber files to be included
+The KiCAD project and Gerber files are included in the PCB folder.

@@ -1,0 +1,1 @@
+This folder includes the original KiCAD files for the PCB Design as well as the Gerber files used for PCB production.
