@@ -1,0 +1,6 @@
+{
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "ThrustStand/lib/jSerialComm-2.11.0.jar"
+    ]
+}
