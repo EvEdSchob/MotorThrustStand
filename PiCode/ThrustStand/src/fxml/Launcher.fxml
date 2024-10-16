@@ -16,7 +16,7 @@
                <children>
                   <ImageView fitWidth="400.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@WMU_primary-digital.png" />
+                        <Image url="@../resources/WMU_primary-digital.png" />
                      </image>
                   </ImageView>
                </children>

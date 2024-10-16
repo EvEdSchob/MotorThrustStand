@@ -1,3 +1,4 @@
+
 /*  Title:  LabMode.Java
  *  Author: Evan Schober
  *  Email:  evan.e.schober@wmich.edu
@@ -9,6 +10,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 
 public class LabMode {
+
+
     @FXML
     private Button returnToMainBtn;
 
@@ -17,7 +20,7 @@ public class LabMode {
         System.out.println("Returning to launcher");
         try {
             ThrustStand t = new ThrustStand();
-            t.changeScene("Launcher.fxml");
+            t.changeScene("fxml/Launcher.fxml");
             
         } catch (Exception e) {
             e.printStackTrace();

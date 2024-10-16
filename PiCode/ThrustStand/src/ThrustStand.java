@@ -1,12 +1,4 @@
-/* Project: MotorThrustStand 
- * 
- * Title: ThrustStand.Java
- * Author: Evan Schober
- * Email: evan.e.schober@wmich.edu
- * Description: This is the parent class for the thrust stand it initializes the primary
- * application stage and then calls Launcher.fxml and its corresponding controller class
- * to fill the stage with the launcher scene. 
- */
+
 
 
 import javafx.application.Application;
@@ -55,7 +47,7 @@ public class ThrustStand extends Application{
         //TODO: Set fullscreen here? Test whether size params are sufficient
 
         //Create the initial launcher window 
-        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Launcher.fxml")); //Load FXML file for launcher window
+        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("fxml/Launcher.fxml")); //Load FXML file for launcher window
         Scene scene = new Scene(root, 800, 480); //Create a new scene and set size to the max of the Pi's display
         primaryStage.setTitle("ThrustStand"); //Create a title for the scene
         primaryStage.setScene(scene); //Add the scene to the existing stage

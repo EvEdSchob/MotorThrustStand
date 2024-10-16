@@ -1,3 +1,4 @@
+
 /* Project: MotorThrustStand 
  * 
  * Title: Launcher.java
@@ -15,7 +16,7 @@ public class Launcher {
         System.out.println("Entering Lab Mode");
         try {
             ThrustStand t = new ThrustStand();
-            t.changeScene("LabMode.fxml");
+            t.changeScene("fxml/LabMode.fxml");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -26,7 +27,7 @@ public class Launcher {
         System.out.println("Entering Dyno Mode");
         try {
             ThrustStand t = new ThrustStand();
-            t.changeScene("DynoMode.fxml");
+            t.changeScene("fxml/DynoMode.fxml");
         } catch (Exception e) {
             e.printStackTrace();
         }

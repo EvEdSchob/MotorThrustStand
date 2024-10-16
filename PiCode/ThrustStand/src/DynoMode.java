@@ -18,7 +18,7 @@ public class DynoMode {
         System.out.println("Returning to launcher");
         try {
             ThrustStand t = new ThrustStand();
-            t.changeScene("Launcher.fxml");
+            t.changeScene("fxml/Launcher.fxml");
             
         } catch (Exception e) {
             e.printStackTrace();
