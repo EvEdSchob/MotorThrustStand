@@ -11,8 +11,8 @@ import javafx.event.ActionEvent;
 
 public class Launcher {
         public void labMode(ActionEvent lab) throws Exception{
-        System.out.println("Entering Lab Mode");
         //Switch to "Lab Mode" window
+        System.out.println("Entering Lab Mode");
         try {
             ThrustStand t = new ThrustStand();
             t.changeScene("LabMode.fxml");
@@ -22,8 +22,8 @@ public class Launcher {
     }
 
     public void dynoMode(ActionEvent dyno) throws Exception{
-        System.out.println("Entering Dyno Mode");
         //Switch to "Dyno Mode" window
+        System.out.println("Entering Dyno Mode");
         try {
             ThrustStand t = new ThrustStand();
             t.changeScene("DynoMode.fxml");

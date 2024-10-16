@@ -5,21 +5,22 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane id="launcher" prefHeight="480" prefWidth="800" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Launcher">
    <children>
       <SplitPane dividerPositions="0.3" layoutX="220.0" layoutY="94.0" orientation="VERTICAL" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <items>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="140.0" prefWidth="598.0">
+            <StackPane prefHeight="150.0" prefWidth="200.0">
                <children>
-                  <ImageView fitHeight="129.0" fitWidth="352.0" layoutX="223.0" layoutY="13.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitWidth="400.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@WMU_primary-digital.png" />
                      </image>
                   </ImageView>
                </children>
-            </AnchorPane>
+            </StackPane>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                <children>
                   <SplitPane dividerPositions="0.33, 0.66" layoutX="199.0" layoutY="38.0" prefHeight="276.0" prefWidth="598.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">

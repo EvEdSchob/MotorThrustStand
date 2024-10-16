@@ -31,6 +31,7 @@ public class ThrustStand extends Application{
              * Syn + Ack <- Teensy
              * Ack -> Teensy
              */
+            //May need serial helper class
         } catch (Exception e) {
             // TODO: handle exception
             //If unable to establish serial connection create a popup error message
