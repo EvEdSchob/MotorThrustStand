@@ -25,7 +25,7 @@
                               <ButtonBar buttonOrder="U+L_HE+FBIX_NCYOA_R" layoutX="10.0" layoutY="103.0" prefHeight="40.0" prefWidth="200.0">
                                  <buttons>
                                     <Button mnemonicParsing="false" text="Tear/Zero" />
-                                    <Button mnemonicParsing="false" text="Hold" />
+                                    <ToggleButton mnemonicParsing="false" text="Hold" />
                                     <ComboBox prefHeight="24.0" prefWidth="85.0" />
                                  </buttons>
                               </ButtonBar>
@@ -89,7 +89,11 @@
                         <AnchorPane prefHeight="200.0" prefWidth="200.0">
                            <children>
                               <Label layoutX="119.0" layoutY="14.0" text="Throttle" />
-                              <Slider layoutX="9.0" layoutY="107.0" prefHeight="16.0" prefWidth="275.0" showTickLabels="true" showTickMarks="true" />
+                              <Slider layoutX="9.0" layoutY="30.0" prefHeight="16.0" prefWidth="275.0" showTickLabels="true" showTickMarks="true" />
+                              <ComboBox layoutX="123.0" layoutY="80.0" prefWidth="150.0" promptText="#" />
+                              <Label layoutX="70.0" layoutY="84.0" text="Blades" />
+                              <TextField alignment="CENTER" layoutX="123.0" layoutY="115.0" prefHeight="24.0" prefWidth="150.0" text="00000" />
+                              <Label layoutX="78.0" layoutY="119.0" text="RPM" />
                            </children>
                         </AnchorPane>
                      </items>
