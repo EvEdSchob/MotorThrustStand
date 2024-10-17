@@ -1,9 +1,8 @@
-
 /* Project: MotorThrustStand 
- * 
  * Title: Launcher.java
  * Author: Evan Schober
  * Email: evan.e.schober@wmich.edu
+ * Parent Class: ThrustStand.java
  * Description: This is the controller class for the primary launch window.
  * It is referenced by Launcher.fxml to control the actions of the buttons
  * shown within that view. The program can also be exited from this window.
