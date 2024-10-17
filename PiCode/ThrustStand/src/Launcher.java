@@ -31,6 +31,16 @@ public class Launcher extends BaseController {
         }
     }
 
+    public void configure(ActionEvent config) throws Exception{
+        //Switch to "Configuration" window
+        System.out.println("Entering Configuration Menu");
+        try {
+            thrustStand.changeScene("fxml/Configuration.fxml");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void exit(ActionEvent exit){
         //Exit the program gracefully
         System.out.println("Goodbye!");
