@@ -1,4 +1,3 @@
-
 /*  Title:  LabMode.Java
  *  Author: Evan Schober
  *  Email:  evan.e.schober@wmich.edu
@@ -9,7 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 
-public class LabMode {
+public class LabMode extends BaseController {
 
 
     @FXML
