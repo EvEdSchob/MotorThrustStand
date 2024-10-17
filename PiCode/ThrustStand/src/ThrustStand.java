@@ -16,7 +16,7 @@ import javafx.fxml.FXMLLoader;
 
 public class ThrustStand extends Application{
     private SerialController serialController; //Serial communication object for maintaining data 
-    private static Stage mainStage; //Generic top level "stage" that we can replace with other scenes.
+    private Stage mainStage; //Generic top level "stage" that we can replace with other scenes.
 
     public static void main(String[] args) {
         System.out.println("Launching Thrust Stand..."); //Output a startup message to the terminal
@@ -47,20 +47,43 @@ public class ThrustStand extends Application{
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        mainStage = primaryStage;
-        //TODO: Set fullscreen here? Test whether size params are sufficient
+        this.mainStage = primaryStage;
+        this.serialController = new SerialController();
 
         //Create the initial launcher window 
-        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("fxml/Launcher.fxml")); //Load FXML file for launcher window
-        Scene scene = new Scene(root); //Create a new scene and set size to the max of the Pi's display
-        primaryStage.setTitle("ThrustStand"); //Create a title for the scene
-        primaryStage.setScene(scene); //Add the scene to the existing stage
-        primaryStage.show(); //Launch application
+        changeScene("fxml/Launcher.fxml");
+        //Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("fxml/Launcher.fxml")); //Load FXML file for launcher window
+        //Scene scene = new Scene(root); //Create a new scene and set size to the max of the Pi's display
+        mainStage.setTitle("ThrustStand"); //Create a title for the scene
+        //mainStage.setScene(scene); //Add the scene to the existing stage
+        mainStage.show(); //Launch application
     }
 
     //Scene changer method called by child controller classes
     public void changeScene(String fxml) throws Exception{
-        Parent pane = FXMLLoader.load(getClass().getResource(fxml));
-        mainStage.getScene().setRoot(pane);
+        //Parent pane = FXMLLoader.load(getClass().getResource(fxml));
+        //mainStage.getScene().setRoot(pane);
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml));
+        Parent root = loader.load();
+
+        BaseController controller = loader.getController();
+        controller.setSerialController(serialController);
+        controller.setMainApplication(this);
+
+        if (mainStage.getScene() == null) {
+            Scene scene = new Scene(root);
+            mainStage.setScene(scene);
+        } else {
+            mainStage.getScene().setRoot(root);
+        }
+    }
+
+    @Override
+    public void stop(){
+        //Close the serial port when the application closes
+        if (serialController != null) {
+            serialController.closePort();
+        }
     }
 }

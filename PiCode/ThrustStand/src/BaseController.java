@@ -6,7 +6,7 @@ public abstract class BaseController {
         this.serialController = serialController;
     }
     
-    public void setMainApplication(SerialController serialController){
+    public void setMainApplication(ThrustStand thrustStand){
         this.thrustStand = thrustStand;
     }
 }

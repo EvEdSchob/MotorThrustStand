@@ -9,8 +9,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 
 public class LabMode extends BaseController {
-
-
     @FXML
     private Button returnToMainBtn;
 
@@ -18,8 +16,7 @@ public class LabMode extends BaseController {
     void returnToMainBtn(ActionEvent rtn){
         System.out.println("Returning to launcher");
         try {
-            ThrustStand t = new ThrustStand();
-            t.changeScene("fxml/Launcher.fxml");
+            thrustStand.changeScene("fxml/Launcher.fxml");
             
         } catch (Exception e) {
             e.printStackTrace();

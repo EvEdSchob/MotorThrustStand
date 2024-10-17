@@ -10,13 +10,12 @@
  */
 import javafx.event.ActionEvent;
 
-public class Launcher {
+public class Launcher extends BaseController {
         public void labMode(ActionEvent lab) throws Exception{
         //Switch to "Lab Mode" window
         System.out.println("Entering Lab Mode");
         try {
-            ThrustStand t = new ThrustStand();
-            t.changeScene("fxml/LabMode.fxml");
+            thrustStand.changeScene("fxml/LabMode.fxml");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -26,8 +25,7 @@ public class Launcher {
         //Switch to "Dyno Mode" window
         System.out.println("Entering Dyno Mode");
         try {
-            ThrustStand t = new ThrustStand();
-            t.changeScene("fxml/DynoMode.fxml");
+            thrustStand.changeScene("fxml/DynoMode.fxml");
         } catch (Exception e) {
             e.printStackTrace();
         }
