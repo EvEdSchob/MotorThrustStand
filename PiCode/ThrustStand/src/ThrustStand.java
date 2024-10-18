@@ -9,6 +9,7 @@
 
 import javafx.application.Application;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.scene.Scene;
 import javafx.scene.Parent;
 import javafx.fxml.FXMLLoader;
@@ -30,6 +31,8 @@ public class ThrustStand extends Application{
         //Create the initial launcher window 
         changeScene("fxml/Launcher.fxml");
         mainStage.setTitle("ThrustStand"); //Create a title for the scene
+        mainStage.initStyle(StageStyle.UNDECORATED);
+        //mainStage.setFullScreen(true); //Comment out for debugging
         mainStage.show(); //Launch application
     }
 
@@ -44,6 +47,7 @@ public class ThrustStand extends Application{
 
         if (mainStage.getScene() == null) {
             Scene scene = new Scene(root);
+
             mainStage.setScene(scene);
         } else {
             mainStage.getScene().setRoot(root);
