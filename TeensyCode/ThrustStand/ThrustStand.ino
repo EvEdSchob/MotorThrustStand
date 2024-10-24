@@ -32,6 +32,17 @@ bool msgRDY = false;
 unsigned long lastSendTime = 0;
 
 //Thrust sensor variables
+volatile unsigned long lastPulseTime = 0;
+volatile unsigned long pulseCount = 0;
+unsigned long lastRPM = 0;
+const unsigned long RPM_CALC_INTERVAL = 100000; //Calculate RPM every 100ms
+int numBlades = 2; //Default to 2 blade propeller
+float currentRPM = 0.0;
+const unsigned long RPM_TIMEOUT = 2000000; //Timeout RPM to 0 after 2 seconds
+
+//Debounce the interrupt
+const unsigned long DEBOUNCE_MICROS = 1000; //1ms debouce (May need to be shorter)
+volatile unsigned long lastInterruptTime = 0;
 
 void setup() {
   // put your setup code here, to run once:
@@ -47,7 +58,7 @@ void setup() {
   analogWriteFrequency(ESC_OUT, PWM_FREQ);
   analogWriteResolution(PWM_RES);
   pinMode(ESC_OUT, OUTPUT);
-  analogWrite(ESC_PIN, MIN_PULSE); //Start the speed controller at minimum
+  analogWrite(ESC_OUT, MIN_PULSE); //Start the speed controller at minimum
 
 
   
@@ -66,6 +77,54 @@ void loop() {
     inputBuffer = "";
   }
 
+}
+
+void calculateRPM(unsigned long currentTime){
+  noInterrupts(); //Disable interrupt while reading volatiles
+  unsigned long localLastPulseTime = lastPulseTime;
+  unsigned long localPulseCount = pulseCount;
+  pulseCount = 0; //Reset pulse count for next reading;
+  interrupts(); //Re-enable interrupts
+
+  //Check if motor has stopped
+  if(currentTime - localLastPulseTime > RPM_TIMEOUT){
+    currentRPM = 0;
+    return;
+  }
+
+  //Calculate RPM based on pulse count and time interval
+  float minutesFrac = (float)RPM_CALC_INTERVAL / 60000000.0; // Convert microseconds to minutes
+  currentRPM = (localPulseCount / (float)numBlades) / minutesFrac;
+}
+
+void checkForMSG() {
+  while (Serial.available()){
+    char inChar = (char)Serial.read();
+    if(inChar == '\n'){
+      msgRDY = true;
+      return;
+    }
+    inputBuffer += inChar;
+  }
+}
+void processMSG(){
+  //TODO: Define message flags and handle accordingly
+}
+
+void setESCThrottle(int throttlePercent){
+  throttlePercent = constrain(throttlePercent, 0, 100);
+  int pulseWidth = map(throttlePercent, 0, 100, MIN_PULSE, MAX_PULSE);
+  analogWrite(ESC_OUT, pulseWidth);
+}
+void sendData(){
+  float pitot1 = readVoltage(PITOT_FRONT);
+  float pitot2 = readVoltage(PITOT_REAR);
+  float current = readVoltage(I_SENS);
+  float voltage = readVoltage(V_SENS);
+  long rawLoadCell = thrustSensor.read();
+
+  String dataPackage = packageData(pitot1, pitot2, current, voltage, rawLoadCell, currentRPM);
+  Serial.println(dataPackage);
 }
 
 
