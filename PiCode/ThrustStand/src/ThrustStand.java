@@ -32,7 +32,7 @@ public class ThrustStand extends Application{
         changeScene("fxml/Launcher.fxml");
         mainStage.setTitle("ThrustStand"); //Create a title for the scene
         mainStage.initStyle(StageStyle.UNDECORATED);
-        //mainStage.setFullScreen(true); //Comment out for debugging
+        //mainStage.setFullScreen(true); //Locks stage to fullscreen. Comment out for debugging
         mainStage.show(); //Launch application
     }
 

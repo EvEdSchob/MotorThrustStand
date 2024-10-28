@@ -6,15 +6,26 @@
  */
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
+import javafx.scene.control.*;
 
 public class DynoMode extends BaseController{
-    @FXML
-    private Button returnToMainBtn;
-
-    @FXML
-    private ComboBox<Integer> bladeCount;
+    //FXML variables for linking to scenebuilder controls
+    @FXML private TextField thrustField;
+    @FXML private TextField currentField;
+    @FXML private TextField voltageField;
+    @FXML private TextField airspeed1Field;
+    @FXML private TextField airspeed2Field;
+    @FXML private TextField rpmField; //Not needed for lab mode
+    @FXML private ComboBox<String> thrustUnitCombo;
+    @FXML private ComboBox<String> airspeed1UnitCombo;
+    @FXML private ComboBox<String> airspeed2UnitCombo;
+    @FXML private ComboBox<Integer> bladeCountCombo;
+    //@FXML private ComboBox<Integer> rpmCombo; //Not needed for dyno mode
+    @FXML private Button tearButton;
+    @FXML private Button holdButton;
+    @FXML private Button motorButton;
+    @FXML private Button loggerButton;
+    @FXML private Button returnToMainBtn;
 
     @FXML
     void returnToMainBtn(ActionEvent rtn){
