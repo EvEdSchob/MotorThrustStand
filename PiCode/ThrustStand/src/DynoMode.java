@@ -22,10 +22,15 @@ public class DynoMode extends BaseController{
     @FXML private ComboBox<Integer> bladeCountCombo;
     //@FXML private ComboBox<Integer> rpmCombo; //Not needed for dyno mode
     @FXML private Button tearButton;
-    @FXML private Button holdButton;
-    @FXML private Button motorButton;
-    @FXML private Button loggerButton;
+    @FXML private ToggleButton holdButton;
+    @FXML private ToggleButton motorButton;
+    @FXML private ToggleButton loggerButton;
     @FXML private Button returnToMainBtn;
+
+    @FXML
+    public void initialize(){
+        
+    }
 
     @FXML
     void returnToMainBtn(ActionEvent rtn){

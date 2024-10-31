@@ -6,9 +6,7 @@
  */
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 
 public class LabMode extends BaseController {
     //FXML variables for linking to scenebuilder controls
@@ -28,8 +26,6 @@ public class LabMode extends BaseController {
     @FXML private Button motorButton;
     @FXML private Button loggerButton;
     @FXML private Button returnToMainBtn;
-
-    private SharedElements sharedElements = SharedElements.getInstance();
 
     @FXML
     public void initialize(){
