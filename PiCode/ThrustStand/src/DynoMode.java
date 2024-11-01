@@ -27,6 +27,8 @@ public class DynoMode extends BaseController{
     @FXML private ToggleButton loggerButton;
     @FXML private Button returnToMainBtn;
 
+    private SharedElements sharedElements = new SharedElements();
+    
     @FXML
     public void initialize(){
         

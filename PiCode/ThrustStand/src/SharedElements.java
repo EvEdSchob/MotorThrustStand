@@ -1,5 +1,3 @@
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 
 import com.fazecast.jSerialComm.SerialPortThreadFactory;
@@ -109,6 +107,13 @@ public class SharedElements {
     }
 
     public void handleMotorToggle(){
+        if(motorToggle.isArmed()){
+            System.out.println("Motor Started");
+            //Send serial: Motor Armed;
+        } else {
+            System.out.println("Motor Stopped");
+            //Send serial: Motor Disarmed;
+        }
 
     }
 

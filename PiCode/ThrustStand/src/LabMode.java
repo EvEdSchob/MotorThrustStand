@@ -8,7 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
-public class LabMode extends BaseController {
+public class LabMode extends BaseController{
     //FXML variables for linking to scenebuilder controls
     @FXML private TextField thrustField;
     @FXML private TextField currentField;
@@ -22,14 +22,33 @@ public class LabMode extends BaseController {
     @FXML private ComboBox<Integer> bladeCountCombo;
     @FXML private ComboBox<Integer> rpmCombo; //Not needed for dyno mode
     @FXML private Button tearButton;
-    @FXML private Button holdButton;
-    @FXML private Button motorButton;
-    @FXML private Button loggerButton;
+    @FXML private ToggleButton holdButton;
+    @FXML private ToggleButton motorButton;
+    @FXML private ToggleButton loggerButton;
     @FXML private Button returnToMainBtn;
+
+    private SharedElements sharedElements;
 
     @FXML
     public void initialize(){
-
+        /*
+        sharedElements = new SharedElements();
+        sharedElements.initializeControls(
+            thrustField,
+            tearButton,
+            holdButton,
+            thrustUnitCombo,
+            airspeed1Field,
+            airspeed2Field,
+            airspeed1UnitCombo,
+            airspeed2UnitCombo,
+            currentField,
+            voltageField,
+            bladeCountCombo,
+            motorButton,
+            loggerButton
+        );
+        */
     }
 
     @FXML
