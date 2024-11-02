@@ -49,6 +49,23 @@ public class DynoMode extends BaseController{
         );
         
         serialController.addDataReceivedListener(this::onDataReceived);
+
+        //Add action handlers
+        tearButton.setOnAction(e -> sharedElements.handleTearButton());
+        holdToggle.setOnAction(e -> sharedElements.handleMotorToggle());
+        loggingToggle.setOnAction(e -> sharedElements.handleLoggerToggle());
+        motorToggle.setOnAction(event -> {
+        boolean isSelected = motorToggle.isSelected();
+        serialController.setMotor(isSelected);
+        sharedElements.handleMotorToggle();
+        });
+        throttleSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+            //serialController.setThrottle(newVal.intValue());
+        });
+        bladeCountCombo.setOnAction(event -> {
+            int blades = bladeCountCombo.getValue();
+            serialController.setBladeCount(blades);
+        });
     }
 
     @FXML
@@ -62,7 +79,7 @@ public class DynoMode extends BaseController{
         }
     }
 
-    
+
     private void onDataReceived(String data) {
         // Handle data received
     }

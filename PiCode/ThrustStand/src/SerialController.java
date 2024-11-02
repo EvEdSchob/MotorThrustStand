@@ -14,6 +14,22 @@ public class SerialController {
     private static SerialController instance;
     private SerialPort serialPort;
     private List<Consumer<String>> dataReceivedListeners = new ArrayList<>();
+
+    // Data indices for parsing CSV
+    private static final int PITOT1_INDEX = 0;
+    private static final int PITOT2_INDEX = 1;
+    private static final int CURRENT_INDEX = 2;
+    private static final int VOLTAGE_INDEX = 3;
+    private static final int LOADCELL_INDEX = 4;
+    private static final int RPM_INDEX = 5;
+
+    // Command prefixes for sending to Teensy
+    private static final String CMD_SET_THROTTLE = "THR:";  // THR:50 for 50% throttle
+    private static final String CMD_SET_MODE = "MODE:";     // MODE:LAB or MODE:DYNO
+    private static final String CMD_SET_BLADES = "BLADE:";  // BLADE:2 for 2 blades
+    private static final String CMD_MOTOR = "MOTOR:";       // MOTOR:ON or MOTOR:OFF
+
+    
     
     private SerialController() {}
 
@@ -106,5 +122,53 @@ public class SerialController {
         return Arrays.stream(SerialPort.getCommPorts())
                 .map(SerialPort::getSystemPortName)
                 .toArray(String[]::new);
+    }
+
+    // Method to parse received data
+    private void parseData(String data) {
+        try {
+            String[] values = data.trim().split(",");
+            if (values.length == 6) {  // Verify we got all expected values
+                float pitot1 = Float.parseFloat(values[PITOT1_INDEX]);
+                float pitot2 = Float.parseFloat(values[PITOT2_INDEX]);
+                float current = Float.parseFloat(values[CURRENT_INDEX]);
+                float voltage = Float.parseFloat(values[VOLTAGE_INDEX]);
+                long loadCell = Long.parseLong(values[LOADCELL_INDEX]);
+                float rpm = Float.parseFloat(values[RPM_INDEX]);
+                
+                // Now update UI elements through SharedElements
+                SharedElements.getInstance().updateMeasurements(
+                    loadCell,    // You'll need to convert raw value to actual units
+                    pitot1,      // Convert voltage to airspeed
+                    pitot2,      // Convert voltage to airspeed
+                    current,     // Convert to actual current
+                    voltage,     // Convert to actual voltage
+                    rpm
+                );
+            }
+        } catch (NumberFormatException e) {
+            System.err.println("Error parsing data: " + data);
+            e.printStackTrace();
+        }
+    }
+
+    // Methods to send commands to Teensy
+    public boolean setThrottle(int percentage) {
+        return sendData(CMD_SET_THROTTLE + percentage);
+    }
+
+    public boolean setMode(String mode) {
+        if (mode.equals("LAB") || mode.equals("DYNO")) {
+            return sendData(CMD_SET_MODE + mode);
+        }
+        return false;
+    }
+
+    public boolean setBladeCount(int blades) {
+        return sendData(CMD_SET_BLADES + blades);
+    }
+
+    public boolean setMotor(boolean on) {
+        return sendData(CMD_MOTOR + (on ? "ON" : "OFF"));
     }
 }

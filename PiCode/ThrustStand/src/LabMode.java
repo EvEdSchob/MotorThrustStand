@@ -47,6 +47,18 @@ public class LabMode extends BaseController{
         );
 
         serialController.addDataReceivedListener(this::onDataReceived);
+
+        //Add action handlers
+        tearButton.setOnAction(e -> sharedElements.handleTearButton());
+        holdToggle.setOnAction(e -> sharedElements.handleMotorToggle());
+        loggingToggle.setOnAction(e -> sharedElements.handleLoggerToggle());
+        motorToggle.setOnAction(event -> {
+            boolean isSelected = motorToggle.isSelected();
+            serialController.setMotor(isSelected);
+            sharedElements.handleMotorToggle();
+        });
+
+        
     }
 
     @FXML
@@ -64,5 +76,5 @@ public class LabMode extends BaseController{
     private void onDataReceived(String data) {
         //dataDisplay.appendText(data + "\n");
     }
-    
+
 }
