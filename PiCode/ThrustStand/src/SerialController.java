@@ -11,11 +11,18 @@ import java.util.function.Consumer;
 import java.util.Arrays;
 
 public class SerialController {
+    private static SerialController instance;
     private SerialPort serialPort;
-
     private List<Consumer<String>> dataReceivedListeners = new ArrayList<>();
     
-    public SerialController() {}
+    private SerialController() {}
+
+    public static SerialController getInstance(){
+        if(instance == null){
+            instance = new SerialController();
+        }
+        return instance;
+    }
 
     //Public method for opening a given serial port
     public boolean openPort(String portName, int buadRate){
@@ -40,6 +47,24 @@ public class SerialController {
         if (serialPort != null && serialPort.isOpen()) {
             serialPort.closePort();
             System.out.println("Closed port: " + serialPort.getSystemPortName());
+        }
+    }
+
+    public boolean sendData(String data){
+        if(serialPort != null && serialPort.isOpen()){
+            String dataToSend = data + "\n";
+            byte[] bytes = dataToSend.getBytes(StandardCharsets.UTF_8);
+            int bytesWritten = serialPort.writeBytes(bytes, bytes.length);
+            if(bytesWritten == -1){
+                System.err.println("Failed to write data to serial port");
+                return false;
+            } else {
+                System.out.println("Sent: " + dataToSend.trim());
+                return true;
+            }
+        } else {
+            System.err.println("Serial port is not open");
+            return false;
         }
     }
 

@@ -7,10 +7,13 @@
  */
 public abstract class BaseController {
     protected SerialController serialController;
+    protected SharedElements sharedElements;
     protected ThrustStand thrustStand;
 
-    public void setSerialController(SerialController serialController){
-        this.serialController = serialController;
+
+    public BaseController(){
+        this.serialController = SerialController.getInstance();
+        this.sharedElements = SharedElements.getInstance();
     }
     
     public void setMainApplication(ThrustStand thrustStand){

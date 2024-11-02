@@ -9,46 +9,44 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
 public class LabMode extends BaseController{
-    //FXML variables for linking to scenebuilder controls
+    //Generic controls shared between the lab and dyno scenes
     @FXML private TextField thrustField;
     @FXML private TextField currentField;
     @FXML private TextField voltageField;
-    @FXML private TextField airspeed1Field;
-    @FXML private TextField airspeed2Field;
-    //@FXML private TextField rpmField; //Not needed for lab mode
+    @FXML private TextField incomingAirspeedField;
+    @FXML private TextField wakeAirspeedField;
     @FXML private ComboBox<String> thrustUnitCombo;
-    @FXML private ComboBox<String> airspeed1UnitCombo;
-    @FXML private ComboBox<String> airspeed2UnitCombo;
+    @FXML private ComboBox<String> incomingAirspeedUnitCombo;
+    @FXML private ComboBox<String> wakeAirspeedUnitCombo;
     @FXML private ComboBox<Integer> bladeCountCombo;
-    @FXML private ComboBox<Integer> rpmCombo; //Not needed for dyno mode
     @FXML private Button tearButton;
-    @FXML private ToggleButton holdButton;
-    @FXML private ToggleButton motorButton;
-    @FXML private ToggleButton loggerButton;
+    @FXML private ToggleButton holdToggle;
+    @FXML private ToggleButton motorToggle;
+    @FXML private ToggleButton loggingToggle;
     @FXML private Button returnToMainBtn;
 
-    private SharedElements sharedElements;
+    //Lab mode specific controls
+    @FXML private ComboBox<Integer> rpmCombo;
 
     @FXML
     public void initialize(){
-        /*
-        sharedElements = new SharedElements();
         sharedElements.initializeControls(
             thrustField,
             tearButton,
-            holdButton,
+            holdToggle,
             thrustUnitCombo,
-            airspeed1Field,
-            airspeed2Field,
-            airspeed1UnitCombo,
-            airspeed2UnitCombo,
+            incomingAirspeedField,
+            wakeAirspeedField,
+            incomingAirspeedUnitCombo,
+            wakeAirspeedUnitCombo,
             currentField,
             voltageField,
             bladeCountCombo,
-            motorButton,
-            loggerButton
+            motorToggle,
+            loggingToggle
         );
-        */
+
+        serialController.addDataReceivedListener(this::onDataReceived);
     }
 
     @FXML
@@ -60,6 +58,11 @@ public class LabMode extends BaseController{
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+
+    private void onDataReceived(String data) {
+        //dataDisplay.appendText(data + "\n");
     }
     
 }

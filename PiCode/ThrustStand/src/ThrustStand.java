@@ -15,7 +15,6 @@ import javafx.scene.Parent;
 import javafx.fxml.FXMLLoader;
 
 public class ThrustStand extends Application{
-    private SerialController serialController; //Serial communication object for maintaining data 
     private Stage mainStage; //Generic top level "stage" that we can replace with other scenes.
 
     public static void main(String[] args) {
@@ -26,7 +25,10 @@ public class ThrustStand extends Application{
     @Override
     public void start(Stage primaryStage) throws Exception {
         this.mainStage = primaryStage;
-        this.serialController = new SerialController();
+
+        //Initialize Singletons
+        SerialController.getInstance();
+        SharedElements.getInstance();
 
         //Create the initial launcher window 
         changeScene("fxml/Launcher.fxml");
@@ -42,7 +44,6 @@ public class ThrustStand extends Application{
         Parent root = loader.load();
 
         BaseController controller = loader.getController();
-        controller.setSerialController(serialController);
         controller.setMainApplication(this);
 
         if (mainStage.getScene() == null) {
@@ -57,8 +58,6 @@ public class ThrustStand extends Application{
     @Override
     public void stop(){
         //Close the serial port when the application closes
-        if (serialController != null) {
-            serialController.closePort();
-        }
+        SerialController.getInstance().closePort();
     }
 }

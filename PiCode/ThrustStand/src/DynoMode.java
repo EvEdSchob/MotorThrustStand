@@ -9,29 +9,46 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
 public class DynoMode extends BaseController{
-    //FXML variables for linking to scenebuilder controls
+    //Generic controls shared between the lab and dyno scenes
     @FXML private TextField thrustField;
     @FXML private TextField currentField;
     @FXML private TextField voltageField;
-    @FXML private TextField airspeed1Field;
-    @FXML private TextField airspeed2Field;
-    @FXML private TextField rpmField; //Not needed for lab mode
+    @FXML private TextField incomingAirspeedField;
+    @FXML private TextField wakeAirspeedField;
     @FXML private ComboBox<String> thrustUnitCombo;
-    @FXML private ComboBox<String> airspeed1UnitCombo;
-    @FXML private ComboBox<String> airspeed2UnitCombo;
+    @FXML private ComboBox<String> incomingAirspeedUnitCombo;
+    @FXML private ComboBox<String> wakeAirspeedUnitCombo;
     @FXML private ComboBox<Integer> bladeCountCombo;
-    //@FXML private ComboBox<Integer> rpmCombo; //Not needed for dyno mode
     @FXML private Button tearButton;
-    @FXML private ToggleButton holdButton;
-    @FXML private ToggleButton motorButton;
-    @FXML private ToggleButton loggerButton;
+    @FXML private ToggleButton holdToggle;
+    @FXML private ToggleButton motorToggle;
+    @FXML private ToggleButton loggingToggle;
     @FXML private Button returnToMainBtn;
 
-    private SharedElements sharedElements = new SharedElements();
+    //Dyno mode specific controls
+    @FXML private Slider throttleSlider;
+    @FXML private TextField rpmField;
+
     
     @FXML
     public void initialize(){
+        sharedElements.initializeControls(
+            thrustField,
+            tearButton,
+            holdToggle,
+            thrustUnitCombo,
+            incomingAirspeedField,
+            wakeAirspeedField,
+            incomingAirspeedUnitCombo,
+            wakeAirspeedUnitCombo,
+            currentField,
+            voltageField,
+            bladeCountCombo,
+            motorToggle,
+            loggingToggle
+        );
         
+        serialController.addDataReceivedListener(this::onDataReceived);
     }
 
     @FXML
@@ -44,5 +61,9 @@ public class DynoMode extends BaseController{
             e.printStackTrace();
         }
     }
+
     
+    private void onDataReceived(String data) {
+        // Handle data received
+    }
 }

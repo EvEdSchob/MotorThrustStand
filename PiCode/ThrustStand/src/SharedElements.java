@@ -5,21 +5,25 @@ import com.fazecast.jSerialComm.SerialPortThreadFactory;
 import javafx.beans.property.*;
 
 public class SharedElements {
-    private TextField thrustMeasurement;
+    private static SharedElements instance;
+
+    //FXML Element variables
+    private TextField thrustField;
     private Button tearButton;
     private ToggleButton holdToggle;
-    private ComboBox<String> thrustUnits;
-    private TextField incomingAirspeed;
-    private TextField wakeAirspeed;
-    private ComboBox<String> incomingAirspeedUnits;
-    private ComboBox<String> wakeAirspeedUnits;
-    private TextField currentDisplay;
-    private TextField voltageDisplay;
-    private ComboBox<Integer> bladeCount;
+    private ComboBox<String> thrustUnitCombo;
+    private TextField incomingAirspeedField;
+    private TextField wakeAirspeedField;
+    private ComboBox<String> incomingAirspeedUnitCombo;
+    private ComboBox<String> wakeAirspeedUnitCombo;
+    private TextField currentField;
+    private TextField voltageField;
+    private ComboBox<Integer> bladeCountCombo;
     private ToggleButton motorToggle;
     private ToggleButton loggingToggle;
 
-    private final StringProperty thrustMeasurementProperty = new SimpleStringProperty();
+    //Property values from FXML elements
+    private final StringProperty thrustProperty = new SimpleStringProperty();
     private final StringProperty incomingAirspeedProperty = new SimpleStringProperty();
     private final StringProperty wakeAirspeedProperty = new SimpleStringProperty();
     private final StringProperty currentProperty = new SimpleStringProperty();
@@ -28,73 +32,85 @@ public class SharedElements {
     private final BooleanProperty motorActiveProperty = new SimpleBooleanProperty();
     private final BooleanProperty loggerActiveProperty = new SimpleBooleanProperty();
 
+    private SharedElements(){
+            
+    }
+
+    public static SharedElements getInstance(){
+        if (instance == null) {
+            instance = new SharedElements();
+        }
+        return instance;
+    }
+
     public void initializeControls(
-            TextField thrustMeasurement,
+            TextField thrustField,
             Button tearButton,
             ToggleButton holdToggle,
-            ComboBox<String> thrustUnits,
-            TextField incomingAirspeed,
-            TextField wakeAirspeed,
-            ComboBox<String> incomingAirspeedUnits,
-            ComboBox<String> wakeAirspeedUnits,
-            TextField currentDisplay,
-            TextField voltageDisplay,
-            ComboBox<Integer> bladeCount,
+            ComboBox<String> thrustUnitCombo,
+            TextField incomingAirspeedField,
+            TextField wakeAirspeedField,
+            ComboBox<String> incomingAirspeedUnitCombo,
+            ComboBox<String> wakeAirspeedUnitCombo,
+            TextField currentField,
+            TextField voltageField,
+            ComboBox<Integer> bladeCountCombo,
             ToggleButton motorToggle,
             ToggleButton loggingToggle){
-        this.thrustMeasurement = thrustMeasurement;
+        this.thrustField = thrustField;
         this.tearButton = tearButton;
         this.holdToggle = holdToggle;
-        this.thrustUnits = thrustUnits;
-        this.incomingAirspeed = incomingAirspeed;
-        this.wakeAirspeed = wakeAirspeed;
-        this.incomingAirspeedUnits = incomingAirspeedUnits;
-        this.wakeAirspeedUnits = wakeAirspeedUnits;
-        this.currentDisplay = currentDisplay;
-        this.voltageDisplay = voltageDisplay;
+        this.thrustUnitCombo = thrustUnitCombo;
+        this.incomingAirspeedField = incomingAirspeedField;
+        this.wakeAirspeedField = wakeAirspeedField;
+        this.incomingAirspeedUnitCombo = incomingAirspeedUnitCombo;
+        this.wakeAirspeedUnitCombo = wakeAirspeedUnitCombo;
+        this.currentField = currentField;
+        this.voltageField = voltageField;
+        this.bladeCountCombo = bladeCountCombo;
         this.motorToggle = motorToggle;
         this.loggingToggle = loggingToggle;
-
+        
         setupControls();
         setupBindings();
     }
 
     private void setupControls(){
         //Thrust controls
-        thrustMeasurement.setEditable(false);
-        thrustUnits.getItems().addAll("lb","kg","N");
-        thrustUnits.setValue("lb");
+        thrustField.setEditable(false);
+        thrustUnitCombo.getItems().addAll("lb","kg","N");
+        thrustUnitCombo.setValue("lb");
 
         //Airspeed controls
         String[] airspeedUnitOptions = {"mph","ft/s","kph","m/s"};
-        incomingAirspeedUnits.getItems().addAll(airspeedUnitOptions);
-        wakeAirspeedUnits.getItems().addAll(airspeedUnitOptions);
-        incomingAirspeedUnits.setValue("m/s");
-        wakeAirspeedUnits.setValue("m/s");
+        incomingAirspeedUnitCombo.getItems().addAll(airspeedUnitOptions);
+        wakeAirspeedUnitCombo.getItems().addAll(airspeedUnitOptions);
+        incomingAirspeedUnitCombo.setValue("m/s");
+        wakeAirspeedUnitCombo.setValue("m/s");
 
         //RPM Controls
-        bladeCount.getItems().addAll(1,2,3,4,5,6,7,8);
-        bladeCount.setValue(2);
+        bladeCountCombo.getItems().addAll(1,2,3,4,5,6,7,8);
+        bladeCountCombo.setValue(2);
 
         //Electircal measurements
-        currentDisplay.setEditable(false);
-        voltageDisplay.setEditable(false);
+        currentField.setEditable(false);
+        voltageField.setEditable(false);
 
     }
 
     private void setupBindings(){
-        thrustMeasurement.textProperty().bindBidirectional(thrustMeasurementProperty);
-        incomingAirspeed.textProperty().bindBidirectional(incomingAirspeedProperty);
-        wakeAirspeed.textProperty().bindBidirectional(wakeAirspeedProperty);
-        currentDisplay.textProperty().bindBidirectional(currentProperty);
-        voltageDisplay.textProperty().bindBidirectional(voltageProperty);
+        thrustField.textProperty().bindBidirectional(thrustProperty);
+        incomingAirspeedField.textProperty().bindBidirectional(incomingAirspeedProperty);
+        wakeAirspeedField.textProperty().bindBidirectional(wakeAirspeedProperty);
+        currentField.textProperty().bindBidirectional(currentProperty);
+        voltageField.textProperty().bindBidirectional(voltageProperty);
         holdToggle.selectedProperty().bindBidirectional(holdActiveProperty);
         motorToggle.selectedProperty().bindBidirectional(motorActiveProperty);
         loggingToggle.selectedProperty().bindBidirectional(loggerActiveProperty);
 
     }
 
-    public StringProperty thrustMeasurementProperty() { return thrustMeasurementProperty; }
+    public StringProperty thrustProperty() { return thrustProperty; }
     public StringProperty incomingAirspeedProperty() { return incomingAirspeedProperty; }
     public StringProperty wakeAirspeedProperty() { return wakeAirspeedProperty; }
     public StringProperty currentProperty() { return currentProperty; }
@@ -122,7 +138,7 @@ public class SharedElements {
     }
 
     public void resetAllFields(){
-        thrustMeasurementProperty.set("000.00");
+        thrustProperty.set("000.00");
         incomingAirspeedProperty.set("000.00");
         wakeAirspeedProperty.set("000.00");
         currentProperty.set("000.00");
