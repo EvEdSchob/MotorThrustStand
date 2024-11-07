@@ -16,6 +16,8 @@ import javafx.fxml.FXMLLoader;
 
 public class ThrustStand extends Application{
     private Stage mainStage; //Generic top level "stage" that we can replace with other scenes.
+    //Load Stylesheet
+    private String css = getClass().getResource("/styles/styles.css").toExternalForm();
 
     public static void main(String[] args) {
         System.out.println("Launching Thrust Stand..."); //Output a startup message to the terminal
@@ -25,6 +27,9 @@ public class ThrustStand extends Application{
     @Override
     public void start(Stage primaryStage) throws Exception {
         this.mainStage = primaryStage;
+
+        
+        
 
         //Initialize Singletons
         SerialController.getInstance();
@@ -48,10 +53,13 @@ public class ThrustStand extends Application{
 
         if (mainStage.getScene() == null) {
             Scene scene = new Scene(root);
-
+            //Add stylesheet after inital scene is created
+            scene.getStylesheets().add(css);
             mainStage.setScene(scene);
         } else {
             mainStage.getScene().setRoot(root);
+            //Ensure stylesheet is applied on scene change
+            mainStage.getScene().getStylesheets().add(css);
         }
     }
 
