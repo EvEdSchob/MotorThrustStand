@@ -151,9 +151,9 @@ public class Configuration extends BaseController {
         loadCellCalibrationLabel.setText(String.format("Current calibration: %.6f (g/%s)", 
             sharedElements.getLoadCellCalibration(), weightUnit));
         incomingCalibrationLabel.setText(String.format("Current calibration: %.6f (Pa/(m/s)²)", 
-            sharedElements.getIncomingPitotCalibration()));
+            sharedElements.getIncomingPitotCalibration(), speedUnit));
         wakeCalibrationLabel.setText(String.format("Current calibration: %.6f (Pa/(m/s)²)", 
-            sharedElements.getWakePitotCalibration()));
+            sharedElements.getWakePitotCalibration(), speedUnit));
         currentCalibrationLabel.setText(String.format("Current calibration: %.6f (V/A)", 
             sharedElements.getCurrentSensorSensitivity()));
         voltageCalibrationLabel.setText(String.format("Current calibration: %.6f (ratio)", 

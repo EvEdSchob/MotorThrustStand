@@ -143,16 +143,16 @@ public class SharedElements{
     public void handleMotorToggle(){
         if(motorToggle.isArmed()){
             System.out.println("Motor Started");
-            //Send serial: Motor Armed;
+            //TODO: Send serial: Motor Armed;
         } else {
             System.out.println("Motor Stopped");
-            //Send serial: Motor Disarmed;
+            //TODO: Send serial: Motor Disarmed;
         }
 
     }
 
     public void handleLoggerToggle(){
-
+        //TODO: Build logic for 
     }
 
     public void resetAllFields(){
@@ -165,8 +165,9 @@ public class SharedElements{
         loggerActiveProperty.set(false);
         tearThrust();
     }
-    public void tearThrust(){
 
+    public void tearThrust(){
+        //TODO: Complete Function
     }
 
     public void updateThrustValue(String value) {
@@ -356,12 +357,14 @@ public class SharedElements{
 
     // Add methods to get current raw sensor values
     public float getCurrentPitotVoltage(boolean isIncoming) {
+        //TODO: Complete function
         // Return the current raw voltage reading from the appropriate pitot sensor
         // You'll need to implement this based on how you're getting sensor data
         return 0.0f; // Placeholder
     }
 
     public long getCurrentRawReading() {
+        //TODO: Complete function
         // Return the current raw reading from the load cell
         // You'll need to implement this based on how you're getting sensor data
         return 0L; // Placeholder

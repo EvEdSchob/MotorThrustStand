@@ -74,6 +74,7 @@ public class LabMode extends BaseController{
 
 
     private void onDataReceived(String data) {
+        //TODO: Handle received data
         //dataDisplay.appendText(data + "\n");
     }
 

@@ -28,9 +28,6 @@ public class ThrustStand extends Application{
     public void start(Stage primaryStage) throws Exception {
         this.mainStage = primaryStage;
 
-        
-        
-
         //Initialize Singletons
         SerialController.getInstance();
         SharedElements.getInstance();
