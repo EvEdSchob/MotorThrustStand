@@ -2,8 +2,8 @@
  *  Author: Evan Schober
  *  Email:  evan.e.schober@wmich.edu
  *  Parent Class: ThrustStand.java
- *  Description: Controller class for the configuration window. Referenced
- *  by configuration.fxml
+ *  Description: Controller class for the configuration window. 
+ *  Referenced by configuration.fxml
  */
 
 import javafx.event.ActionEvent;

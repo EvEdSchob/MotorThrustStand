@@ -16,8 +16,7 @@ import javafx.fxml.FXMLLoader;
 
 public class ThrustStand extends Application{
     private Stage mainStage; //Generic top level "stage" that we can replace with other scenes.
-    //Load Stylesheet
-    private String css = getClass().getResource("/styles/styles.css").toExternalForm();
+    private String css = getClass().getResource("/styles/styles.css").toExternalForm(); //Load Stylesheet
 
     public static void main(String[] args) {
         System.out.println("Launching Thrust Stand..."); //Output a startup message to the terminal
@@ -32,8 +31,7 @@ public class ThrustStand extends Application{
         SerialController.getInstance();
         SharedElements.getInstance();
 
-        //Create the initial launcher window 
-        changeScene("fxml/Launcher.fxml");
+        changeScene("fxml/Launcher.fxml"); //Create the initial launcher window 
         mainStage.setTitle("ThrustStand"); //Create a title for the scene
         mainStage.initStyle(StageStyle.UNDECORATED);
         //mainStage.setFullScreen(true); //Locks stage to fullscreen. Comment out for debugging
@@ -42,27 +40,24 @@ public class ThrustStand extends Application{
 
     //Scene changer method called by child controller classes
     public void changeScene(String fxml) throws Exception{
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml));
-        Parent root = loader.load();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml)); //Load the input FXML file
+        Parent root = loader.load(); //Create a parent object for insertion into a scene.
 
         BaseController controller = loader.getController();
         controller.setMainApplication(this);
 
         if (mainStage.getScene() == null) {
-            Scene scene = new Scene(root);
-            //Add stylesheet after inital scene is created
-            scene.getStylesheets().add(css);
-            mainStage.setScene(scene);
+            Scene scene = new Scene(root); //If no scene exists, create one from the input FXML file
+            scene.getStylesheets().add(css); //Add stylesheet after inital scene is created
+            mainStage.setScene(scene); //Insert the scene into the main stage
         } else {
-            mainStage.getScene().setRoot(root);
-            //Ensure stylesheet is applied on scene change
-            mainStage.getScene().getStylesheets().add(css);
+            mainStage.getScene().setRoot(root); //Replace an existing scene with the next one
+            mainStage.getScene().getStylesheets().add(css); //Ensure stylesheet is applied on scene change
         }
     }
 
     @Override
     public void stop(){
-        //Close the serial port when the application closes
-        SerialController.getInstance().closePort();
+        SerialController.getInstance().closePort(); //Close the serial port when the application closes
     }
 }

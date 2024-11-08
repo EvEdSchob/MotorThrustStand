@@ -125,7 +125,7 @@ public class SerialController {
     }
 
     // Method to parse received data
-    private void parseData(String data) {
+    public void parseData(String data) {
         try {
             String[] values = data.trim().split(",");
             if (values.length == 6) {  // Verify we got all expected values
