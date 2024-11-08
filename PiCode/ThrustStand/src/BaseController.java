@@ -3,7 +3,7 @@
  *  Email:  evan.e.schober@wmich.edu
  *  Parent Class: ThrustStand.java
  *  Description: Abstract class extended by each scene controller to maintain
- *  continuous serial connection as scenes change.git  
+ *  continuous serial connection as scenes change.  
  */
 public abstract class BaseController {
     protected SerialController serialController;
