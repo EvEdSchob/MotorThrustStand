@@ -67,8 +67,8 @@ public class Configuration extends BaseController {
                 double inputWeight = Double.parseDouble(knownWeightField.getText());
                 // Convert to grams for internal storage
                 double weightInGrams = convertToGrams(inputWeight, weightUnitCombo.getValue());
-                long rawReading = sharedElements.getCurrentRawReading();
-                double calibration = weightInGrams / rawReading;
+                double currentThrust = Double.parseDouble(sharedElements.thrustProperty().get());
+                double calibration = weightInGrams / currentThrust;
                 sharedElements.setLoadCellCalibration(calibration);
                 updateCalibrationLabels();
             } catch (NumberFormatException ex) {
@@ -134,7 +134,12 @@ public class Configuration extends BaseController {
             double inputSpeed = Double.parseDouble(field.getText());
             // Convert to m/s for internal storage
             double speedInMS = convertToMetersPerSecond(inputSpeed, airspeedUnitCombo.getValue());
-            float currentVoltage = sharedElements.getCurrentPitotVoltage(isIncoming);
+            float currentVoltage;
+            if (isIncoming) {
+                currentVoltage = Float.parseFloat(sharedElements.incomingAirspeedProperty().get());
+            } else {
+                currentVoltage = Float.parseFloat(sharedElements.wakeAirspeedProperty().get());
+            }
             
             sharedElements.calibratePitotSensor(isIncoming, speedInMS, currentVoltage);
             updateCalibrationLabels();

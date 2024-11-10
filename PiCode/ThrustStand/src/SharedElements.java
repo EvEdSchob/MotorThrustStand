@@ -142,17 +142,58 @@ public class SharedElements{
 
     public void handleMotorToggle(){
         if(motorToggle.isArmed()){
-            System.out.println("Motor Started");
-            //TODO: Send serial: Motor Armed;
+            //Motor is being turned on
+            if (SerialController.getInstance().setMotor(true)) {
+                System.out.println("Motor Started");
+                motorActiveProperty.set(true);    
+            } else {
+                //If serial command failed, revert toggle and alert user
+                System.out.println("Failed to start motor");
+                motorToggle.setSelected(false);
+                motorActiveProperty.set(false);
+
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Motor Control Error");
+                alert.setHeaderText("Failed to Start Motor");
+                alert.setContentText("Unable to send motor start command. Please check serial connection and try again.");
+                alert.showAndWait();
+            }
+            
         } else {
-            System.out.println("Motor Stopped");
-            //TODO: Send serial: Motor Disarmed;
+            //Motor is being turned off
+            if(SerialController.getInstance().setMotor(false)){
+                System.out.println("Motor Stopped");
+                motorActiveProperty.set(false);
+            } else {
+                //If serial command failed, revert toggle and alert user
+                System.out.println("Failed to stop motor");
+                motorToggle.setSelected(true);
+                motorActiveProperty.set(true);
+                    
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Motor Control Error");
+                alert.setHeaderText("Failed to Stop Motor");
+                alert.setContentText("Unable to send motor stop command. Please check serial connection and try again. If problems persist, consider emergency stop procedures.");
+                alert.showAndWait();
+            }
         }
 
     }
 
     public void handleLoggerToggle(){
-        //TODO: Build logic for 
+        if (loggingToggle.isSelected()) {
+            //Start logging data
+            loggerActiveProperty.set(true);
+            //TODO: Start loging data to CSV file
+            System.out.println("Data logging started");
+            //Additional logging setup could be added here
+        } else {
+            // Stop logging data
+            loggerActiveProperty.set(false);
+            //TODO: Finalize CSV file
+            System.out.println("Data logging stopped");
+            //Additional logging cleanup could be added here
+        }
     }
 
     public void resetAllFields(){
@@ -167,7 +208,9 @@ public class SharedElements{
     }
 
     public void tearThrust(){
-        //TODO: Complete Function
+        thrustProperty.set("000.00");
+        holdEnabled = false;
+        holdActiveProperty.set(false);
     }
 
     public void updateThrustValue(String value) {
@@ -244,9 +287,8 @@ public class SharedElements{
         return String.format("%.2f", actualVoltage);
     }
 
-    /**
-     * Update all measurements with converted values
-     */
+    
+    //Update all measurements with converted values
     public void updateMeasurements(long rawThrust, float incomingPitotV, float wakePitotV, 
                                  float currentV, float voltageV, float rpm) {
         if (!holdEnabled) {
@@ -266,7 +308,7 @@ public class SharedElements{
         this.calibration.wakePitotCalibration = calibration;
     }
 
-    // Updated save method
+    //Save calibration to a local file
     public void saveCalibration(String filename) {
         try (PrintWriter writer = new PrintWriter(new FileWriter(filename))) {
             writer.println("loadcell=" + calibration.loadCellCalibration);
@@ -279,7 +321,7 @@ public class SharedElements{
         }
     }
 
-    // Updated load method
+    //Load saved calibration data from a file
     public void loadCalibration(String filename) {
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
             String line;
@@ -301,7 +343,7 @@ public class SharedElements{
         }
     }
 
-    // Updated calibration helper method
+    //Calibration helper method
     public void calibratePitotSensor(boolean isIncoming, double knownAirspeed, float measuredVoltage) {
         double airDensity = 1.225; // kg/m³
         double pressure = 0.5 * airDensity * knownAirspeed * knownAirspeed;
@@ -346,27 +388,12 @@ public class SharedElements{
         this.calibration.voltageDividerRatio = ratio;
     }
 
-    // Add method to reset calibration to defaults
+    //Reset calibration to defaults
     public void resetCalibration() {
         calibration.loadCellCalibration = 1.0;
         calibration.incomingPitotCalibration = 1.0;
         calibration.wakePitotCalibration = 1.0;
         calibration.currentSensorSensitivity = 0.185;
         calibration.voltageDividerRatio = 0.2;
-    }
-
-    // Add methods to get current raw sensor values
-    public float getCurrentPitotVoltage(boolean isIncoming) {
-        //TODO: Complete function
-        // Return the current raw voltage reading from the appropriate pitot sensor
-        // You'll need to implement this based on how you're getting sensor data
-        return 0.0f; // Placeholder
-    }
-
-    public long getCurrentRawReading() {
-        //TODO: Complete function
-        // Return the current raw reading from the load cell
-        // You'll need to implement this based on how you're getting sensor data
-        return 0L; // Placeholder
     }
 }
