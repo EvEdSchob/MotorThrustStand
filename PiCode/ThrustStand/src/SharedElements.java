@@ -180,6 +180,10 @@ public class SharedElements{
 
     }
 
+    public void handleHoldToggle() {
+        holdEnabled = holdToggle.isSelected();
+    }
+
     public void handleLoggerToggle(){
         if (loggingToggle.isSelected()) {
             //Start logging data

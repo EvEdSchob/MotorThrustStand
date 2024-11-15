@@ -60,7 +60,7 @@ public class DynoMode extends BaseController{
         sharedElements.handleMotorToggle();
         });
         throttleSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
-            //serialController.setThrottle(newVal.intValue());
+            serialController.setThrottle(newVal.intValue());
         });
         bladeCountCombo.setOnAction(event -> {
             int blades = bladeCountCombo.getValue();

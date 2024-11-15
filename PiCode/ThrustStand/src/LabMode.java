@@ -50,7 +50,7 @@ public class LabMode extends BaseController{
 
         //Add action handlers
         tearButton.setOnAction(e -> sharedElements.handleTearButton());
-        holdToggle.setOnAction(e -> sharedElements.handleMotorToggle());
+        holdToggle.setOnAction(e -> sharedElements.handleHoldToggle());
         loggingToggle.setOnAction(e -> sharedElements.handleLoggerToggle());
         motorToggle.setOnAction(event -> {
             boolean isSelected = motorToggle.isSelected();
