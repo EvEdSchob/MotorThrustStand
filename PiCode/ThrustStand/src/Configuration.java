@@ -9,10 +9,14 @@
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 
 public class Configuration extends BaseController {
     // Serial port selection
     @FXML private ComboBox<String> serialPortCombo;
+    @FXML private HBox serialPortControls;
+    @FXML private Button refreshPortsBtn;
+    @FXML private Button connectPortBtn;
     
     // Load cell calibration
     @FXML private TextField knownWeightField;
@@ -43,6 +47,8 @@ public class Configuration extends BaseController {
     @FXML private Button resetCalibrationBtn;
     @FXML private Button returnToMainBtn;
 
+    private static final int BAUD_RATE = 2000000; //Serial data rate (Match to arduino code)
+
     // Unit conversion constants
     private static final class UnitConversion {
         // Weight conversion factors (to grams)
@@ -58,8 +64,22 @@ public class Configuration extends BaseController {
 
     @FXML
     public void initialize() {
-        // Initialize serial port combo box
-        serialPortCombo.getItems().addAll(serialController.getAvailablePorts());
+        // Initialize serial port selection controls
+        serialPortCombo.setPrefWidth(200); // Make combo box wider for touch
+        serialPortCombo.setVisibleRowCount(5); // Show more items when dropped down
+        
+        refreshPortsBtn.setOnAction(e -> refreshSerialPorts());
+        connectPortBtn.setOnAction(e -> {
+            String selectedPort = serialPortCombo.getValue();
+            if (selectedPort != null && !selectedPort.isEmpty()) {
+                connectToSerialPort(selectedPort);
+            } else {
+                showError("Please select a port first");
+            }
+        });
+        
+        //Populate port combo box
+        refreshSerialPorts();
         
         // Load cell calibration
         calibrateLoadCellBtn.setOnAction(e -> {
@@ -106,6 +126,31 @@ public class Configuration extends BaseController {
         
         // Load current calibration values
         updateCalibrationLabels();
+    }
+
+    private void refreshSerialPorts(){
+        String currentSelection = serialPortCombo.getValue();
+        serialPortCombo.getItems().clear();
+        serialPortCombo.getItems().addAll(serialController.getAvailablePorts());
+
+        // Restore previous selection if it still exists
+        if (currentSelection != null && serialPortCombo.getItems().contains(currentSelection)) {
+            serialPortCombo.setValue(currentSelection);
+        }
+    }
+
+    private void connectToSerialPort(String portName) {
+        // Close existing connection if any
+        serialController.closePort();
+        
+        // Attempt to open new connection
+        if (serialController.openPort(portName, BAUD_RATE)) {
+            showInfo("Successfully connected to " + portName);
+        } else {
+            showError("Failed to connect to " + portName);
+            // Clear selection to indicate failed connection
+            serialPortCombo.setValue(null);
+        }
     }
 
     private double convertToGrams(double value, String unit) {
