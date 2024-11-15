@@ -52,7 +52,7 @@ public class DynoMode extends BaseController{
 
         //Add action handlers
         tearButton.setOnAction(e -> sharedElements.handleTearButton());
-        holdToggle.setOnAction(e -> sharedElements.handleMotorToggle());
+        holdToggle.setOnAction(e -> sharedElements.handleHoldToggle());
         loggingToggle.setOnAction(e -> sharedElements.handleLoggerToggle());
         motorToggle.setOnAction(event -> {
         boolean isSelected = motorToggle.isSelected();
@@ -81,14 +81,6 @@ public class DynoMode extends BaseController{
 
 
     private void onDataReceived(String data) {
-        //TODO: Handle data received
         serialController.parseData(data); //Send to serial controller parsing function
-        //Udpate thrust field
-        //Update current field
-        //Update voltage field
-        //incomingAirspeedField.setText("00.00"); //Update incoming airspeed field 
-        //Update wake airspeed field
-        //Update RPM field
-
     }
 }

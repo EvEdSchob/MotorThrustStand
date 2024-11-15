@@ -141,7 +141,7 @@ public class SharedElements{
     }
 
     public void handleMotorToggle(){
-        if(motorToggle.isArmed()){
+        if(motorToggle.isSelected()){
             //Motor is being turned on
             if (SerialController.getInstance().setMotor(true)) {
                 System.out.println("Motor Started");
@@ -267,10 +267,14 @@ public class SharedElements{
      * @return Formatted current string in amperes
      */
     private String convertVoltageToCurrent(float voltage) {
-        // For ACS712: 0V = -5A, VCC/2 = 0A, VCC = 5A
-        // Assuming 3.3V reference voltage
-        double zeroCurrentVoltage = 3.3 / 2;
-        double current = (voltage - zeroCurrentVoltage) / calibration.currentSensorSensitivity;
+        // ACS758ECB-200U specifications:
+        // Sensitivity: 20mV/A = 0.02V/A
+        // Quiescent voltage (zero current): 0.6V
+
+        // Current = (Vout - Vq) / sensitivity
+        // Where: Vout = measured voltage
+        //        Vq = quiescent voltage (0.6V)
+        double current = (voltage - 0.6) / calibration.currentSensorSensitivity;
         
         return String.format("%.2f", current);
     }
@@ -393,7 +397,7 @@ public class SharedElements{
         calibration.loadCellCalibration = 1.0;
         calibration.incomingPitotCalibration = 1.0;
         calibration.wakePitotCalibration = 1.0;
-        calibration.currentSensorSensitivity = 0.185;
+        calibration.currentSensorSensitivity = 0.02;
         calibration.voltageDividerRatio = 0.2;
     }
 }
