@@ -140,17 +140,9 @@ public class Configuration extends BaseController {
         logFilePathField.setText(logger.getCurrentFilePath());
         appendTimestampCheckbox.setSelected(true);
         
-        browseButton.setOnAction(e -> {
-            DirectoryChooser directoryChooser = new DirectoryChooser();
-            directoryChooser.setTitle("Select Log File Directory");
-            File selectedDirectory = directoryChooser.showDialog(browseButton.getScene().getWindow());
-            
-            if (selectedDirectory != null) {
-                logFilePathField.setText(selectedDirectory.getAbsolutePath());
-                sharedElements.getDataLogger().setFilePath(selectedDirectory.getAbsolutePath() + "/thrust_data");
-            }
-        });
-        
+        // Set up event handlers
+        browseButton.setOnAction(e -> handleDirectorySelection());
+        logFilePathField.setOnAction(e -> handleManualPathEntry());
         appendTimestampCheckbox.setOnAction(e -> {
             sharedElements.getDataLogger().setAppendTimestamp(appendTimestampCheckbox.isSelected());
         });
@@ -178,6 +170,83 @@ public class Configuration extends BaseController {
             showError("Failed to connect to " + portName);
             // Clear selection to indicate failed connection
             serialPortCombo.setValue(null);
+        }
+    }
+
+    private void handleDirectorySelection() {
+        try {
+            File selectedDirectory = showDirectoryChooser();
+            if (selectedDirectory != null) {
+                updateLogDirectory(selectedDirectory.getAbsolutePath());
+            }
+        } catch (Exception ex) {
+            showManualDirectoryInputDialog();
+        }
+    }
+
+    private void showManualDirectoryInputDialog() {
+        TextInputDialog dialog = new TextInputDialog(logFilePathField.getText());
+        dialog.setTitle("Enter Log Directory");
+        dialog.setHeaderText("Please enter the full path for log files:");
+        dialog.setContentText("Path:");
+        
+        dialog.showAndWait().ifPresent(path -> validateAndUpdateDirectory(path));
+    }
+    
+    private void handleManualPathEntry() {
+        validateAndUpdateDirectory(logFilePathField.getText());
+    }
+    
+    private void validateAndUpdateDirectory(String path) {
+        File dir = new File(path);
+        if (!dir.exists()) {
+            if (dir.mkdirs()) {
+                updateLogDirectory(path);
+            } else {
+                showError("Could not create directory: " + path);
+            }
+        } else if (!dir.isDirectory()) {
+            showError("Selected path is not a directory: " + path);
+        } else if (!dir.canWrite()) {
+            showError("Cannot write to selected directory: " + path);
+        } else {
+            updateLogDirectory(path);
+        }
+    }
+    
+    private void updateLogDirectory(String path) {
+        logFilePathField.setText(path);
+        sharedElements.getDataLogger().setFilePath(path + "/thrust_data");
+        updateCurrentLogFileLabel();
+    }
+    
+    private void updateCurrentLogFileLabel() {
+        String currentFile = sharedElements.getDataLogger().getCurrentFilePath();
+        currentLogFileLabel.setText("Current log file: " + 
+            (currentFile != null && !currentFile.isEmpty() ? currentFile : "None"));
+    }
+
+    private File showDirectoryChooser() {
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setTitle("Select Log File Directory");
+        
+        // Set initial directory to current path or user home
+        String currentPath = logFilePathField.getText();
+        if (currentPath != null && !currentPath.isEmpty()) {
+            File currentDir = new File(currentPath);
+            if (currentDir.exists()) {
+                directoryChooser.setInitialDirectory(currentDir);
+            }
+        } else {
+            directoryChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        }
+        
+        try {
+            return directoryChooser.showDialog(browseButton.getScene().getWindow());
+        } catch (IllegalArgumentException ex) {
+            // If the native dialog fails, try with user.home as fallback
+            directoryChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+            return directoryChooser.showDialog(browseButton.getScene().getWindow());
         }
     }
 
