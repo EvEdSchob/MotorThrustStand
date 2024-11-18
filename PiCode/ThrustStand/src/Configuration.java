@@ -10,21 +10,23 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.stage.DirectoryChooser;
+import java.io.File;
 
 public class Configuration extends BaseController {
-    // Serial port selection
+    //Serial port selection
     @FXML private ComboBox<String> serialPortCombo;
     @FXML private HBox serialPortControls;
     @FXML private Button refreshPortsBtn;
     @FXML private Button connectPortBtn;
     
-    // Load cell calibration
+    //Load cell calibration
     @FXML private TextField knownWeightField;
     @FXML private Button calibrateLoadCellBtn;
     @FXML private Label loadCellCalibrationLabel;
     @FXML private ComboBox<String> weightUnitCombo;
     
-    // Pitot sensor calibration
+    //Pitot sensor calibration
     @FXML private TextField incomingKnownSpeedField;
     @FXML private TextField wakeKnownSpeedField;
     @FXML private Button calibrateIncomingBtn;
@@ -33,7 +35,7 @@ public class Configuration extends BaseController {
     @FXML private Label wakeCalibrationLabel;
     @FXML private ComboBox<String> airspeedUnitCombo;
     
-    // Electrical sensor calibration
+    //Electrical sensor calibration
     @FXML private TextField knownCurrentField;
     @FXML private TextField knownVoltageField;
     @FXML private Button calibrateCurrentBtn;
@@ -41,7 +43,13 @@ public class Configuration extends BaseController {
     @FXML private Label currentCalibrationLabel;
     @FXML private Label voltageCalibrationLabel;
     
-    // Control buttons
+    //Data Logger Controls
+    @FXML private TextField logFilePathField;
+    @FXML private Button browseButton;
+    @FXML private CheckBox appendTimestampCheckbox;
+    @FXML private Label currentLogFileLabel;
+
+    //Control buttons
     @FXML private Button saveCalibrationBtn;
     @FXML private Button loadCalibrationBtn;
     @FXML private Button resetCalibrationBtn;
@@ -81,7 +89,7 @@ public class Configuration extends BaseController {
         //Populate port combo box
         refreshSerialPorts();
         
-        // Load cell calibration
+        //Load cell calibration
         calibrateLoadCellBtn.setOnAction(e -> {
             try {
                 double inputWeight = Double.parseDouble(knownWeightField.getText());
@@ -126,6 +134,26 @@ public class Configuration extends BaseController {
         
         // Load current calibration values
         updateCalibrationLabels();
+
+        // Initialize logging controls
+        DataLogger logger = sharedElements.getDataLogger();
+        logFilePathField.setText(logger.getCurrentFilePath());
+        appendTimestampCheckbox.setSelected(true);
+        
+        browseButton.setOnAction(e -> {
+            DirectoryChooser directoryChooser = new DirectoryChooser();
+            directoryChooser.setTitle("Select Log File Directory");
+            File selectedDirectory = directoryChooser.showDialog(browseButton.getScene().getWindow());
+            
+            if (selectedDirectory != null) {
+                logFilePathField.setText(selectedDirectory.getAbsolutePath());
+                sharedElements.getDataLogger().setFilePath(selectedDirectory.getAbsolutePath() + "/thrust_data");
+            }
+        });
+        
+        appendTimestampCheckbox.setOnAction(e -> {
+            sharedElements.getDataLogger().setAppendTimestamp(appendTimestampCheckbox.isSelected());
+        });
     }
 
     private void refreshSerialPorts(){

@@ -49,8 +49,15 @@ public class SharedElements{
     private final BooleanProperty motorActiveProperty = new SimpleBooleanProperty();
     private final BooleanProperty loggerActiveProperty = new SimpleBooleanProperty();
 
+    //DataLogger class instantiation
+    private final DataLogger dataLogger;
+
     private SharedElements(){
-            
+        dataLogger = new DataLogger();
+    }
+
+    public DataLogger getDataLogger(){
+        return dataLogger;
     }
 
     public static SharedElements getInstance(){
@@ -187,16 +194,26 @@ public class SharedElements{
     public void handleLoggerToggle(){
         if (loggingToggle.isSelected()) {
             //Start logging data
-            loggerActiveProperty.set(true);
-            //TODO: Start loging data to CSV file
-            System.out.println("Data logging started");
-            //Additional logging setup could be added here
+            try {
+                dataLogger.startLogging();
+                loggerActiveProperty.set(true);
+                System.out.println("Data logging started: " + dataLogger.getCurrentFilePath());
+            } catch (IOException e) {
+                e.printStackTrace();
+                loggingToggle.setSelected(false);
+                loggerActiveProperty.set(false);
+                
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Logging Error");
+                alert.setHeaderText("Failed to Start Logging");
+                alert.setContentText("Unable to create log file. Please check permissions and try again.");
+                alert.showAndWait();
+            }
         } else {
             // Stop logging data
+            dataLogger.stopLogging();
             loggerActiveProperty.set(false);
-            //TODO: Finalize CSV file
             System.out.println("Data logging stopped");
-            //Additional logging cleanup could be added here
         }
     }
 
