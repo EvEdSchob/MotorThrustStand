@@ -17,7 +17,7 @@ public class SharedElements{
         private double incomingPitotCalibration = 1.0;  // Changed from pitot1
         private double wakePitotCalibration = 1.0;      // Changed from pitot2
         private double currentSensorSensitivity = 0.185;
-        private double voltageDividerRatio = 0.2;
+        private double voltageDividerRatio = 0.1;
     }
     private final CalibrationConstants calibration = new CalibrationConstants();
 
@@ -419,6 +419,6 @@ public class SharedElements{
         calibration.incomingPitotCalibration = 1.0;
         calibration.wakePitotCalibration = 1.0;
         calibration.currentSensorSensitivity = 0.02;
-        calibration.voltageDividerRatio = 0.2;
+        calibration.voltageDividerRatio = 0.1;
     }
 }

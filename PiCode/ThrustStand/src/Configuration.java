@@ -104,6 +104,25 @@ public class Configuration extends BaseController {
             }
         });
 
+        //Voltage calibration
+        calibrateVoltageBtn.setOnAction(e -> {
+            try {
+                double knownVoltage = Double.parseDouble(knownVoltageField.getText());
+                // Get the current raw voltage reading from SharedElements
+                float rawVoltage = Float.parseFloat(sharedElements.voltageProperty().get());
+                
+                // Calculate new voltage divider ratio
+                // ratio = measured_voltage / actual_voltage
+                double newRatio = rawVoltage / knownVoltage;
+                
+                // Update the calibration
+                sharedElements.setVoltageDividerRatio(newRatio);
+                updateCalibrationLabels();
+            } catch (NumberFormatException ex) {
+                showError("Please enter a valid voltage value");
+            }
+        });
+
         // Initialize unit ComboBoxes
         weightUnitCombo.getItems().addAll("g", "kg", "lb", "N");
         weightUnitCombo.setValue("g");
