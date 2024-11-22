@@ -73,99 +73,170 @@ public class Configuration extends BaseController {
     @FXML
     public void initialize() {
         // Initialize serial port selection controls
-        serialPortCombo.setPrefWidth(200); // Make combo box wider for touch
-        serialPortCombo.setVisibleRowCount(5); // Show more items when dropped down
+        initializeSerialControls();
         
-        refreshPortsBtn.setOnAction(e -> refreshSerialPorts());
-        connectPortBtn.setOnAction(e -> {
-            String selectedPort = serialPortCombo.getValue();
-            if (selectedPort != null && !selectedPort.isEmpty()) {
-                connectToSerialPort(selectedPort);
-            } else {
-                showError("Please select a port first");
-            }
-        });
+        // Initialize calibration buttons
+        initializeCalibrationButtons();
         
-        //Populate port combo box
-        refreshSerialPorts();
-        
-        //Load cell calibration
-        calibrateLoadCellBtn.setOnAction(e -> {
-            try {
-                double inputWeight = Double.parseDouble(knownWeightField.getText());
-                // Convert to grams for internal storage
-                double weightInGrams = convertToGrams(inputWeight, weightUnitCombo.getValue());
-                double currentThrust = Double.parseDouble(sharedElements.thrustProperty().get());
-                double calibration = weightInGrams / currentThrust;
-                sharedElements.setLoadCellCalibration(calibration);
-                updateCalibrationLabels();
-            } catch (NumberFormatException ex) {
-                showError("Please enter a valid weight value");
-            }
-        });
-
-        //Voltage calibration
-        calibrateVoltageBtn.setOnAction(e -> {
-            try {
-                double knownVoltage = Double.parseDouble(knownVoltageField.getText());
-                // Get the current raw voltage reading from SharedElements
-                float rawVoltage = Float.parseFloat(sharedElements.voltageProperty().get());
-                
-                // Calculate new voltage divider ratio
-                // ratio = measured_voltage / actual_voltage
-                double newRatio = rawVoltage / knownVoltage;
-                
-                // Update the calibration
-                sharedElements.setVoltageDividerRatio(newRatio);
-                updateCalibrationLabels();
-            } catch (NumberFormatException ex) {
-                showError("Please enter a valid voltage value");
-            }
-        });
-
         // Initialize unit ComboBoxes
-        weightUnitCombo.getItems().addAll("g", "kg", "lb", "N");
-        weightUnitCombo.setValue("g");
+        initializeUnitComboBoxes();
         
-        // Pitot sensor calibration
-        calibrateIncomingBtn.setOnAction(e -> calibratePitotSensor(true));
-        calibrateWakeBtn.setOnAction(e -> calibratePitotSensor(false));
-        airspeedUnitCombo.getItems().addAll("m/s", "mph", "ft/s", "kph");
-        airspeedUnitCombo.setValue("m/s");
-        
-        // Save/Load calibration
-        saveCalibrationBtn.setOnAction(e -> {
-            sharedElements.saveCalibration("calibration.txt");
-            showInfo("Calibration saved successfully");
-        });
-        
-        loadCalibrationBtn.setOnAction(e -> {
-            sharedElements.loadCalibration("calibration.txt");
-            updateCalibrationLabels();
-            showInfo("Calibration loaded successfully");
-        });
-        
-        resetCalibrationBtn.setOnAction(e -> {
-            sharedElements.resetCalibration();
-            updateCalibrationLabels();
-            showInfo("Calibration reset to defaults");
-        });
+        // Initialize logging controls
+        initializeLoggingControls();
         
         // Load current calibration values
         updateCalibrationLabels();
+    }
 
-        // Initialize logging controls
+    //Initialization functions
+    private void initializeSerialControls(){
+        serialPortCombo.setPrefWidth(200);
+        serialPortCombo.setVisibleRowCount(5);
+        refreshPortsBtn.setOnAction(e -> refreshSerialPorts());
+        connectPortBtn.setOnAction(e -> handleSerialConnect());
+        refreshSerialPorts();
+    }
+
+    private void initializeCalibrationButtons() {
+        calibrateLoadCellBtn.setOnAction(e -> handleLoadCellCalibration());
+        calibrateCurrentBtn.setOnAction(e -> handleCurrentCalibration());
+        calibrateVoltageBtn.setOnAction(e -> handleVoltageCalibration());
+        calibrateIncomingBtn.setOnAction(e -> handlePitotCalibration(true));
+        calibrateWakeBtn.setOnAction(e -> handlePitotCalibration(false));
+        
+        saveCalibrationBtn.setOnAction(e -> handleSaveCalibration());
+        loadCalibrationBtn.setOnAction(e -> handleLoadCalibration());
+        resetCalibrationBtn.setOnAction(e -> handleResetCalibration());
+    }
+
+    private void initializeUnitComboBoxes() {
+        weightUnitCombo.getItems().addAll("g", "kg", "lb", "N");
+        weightUnitCombo.setValue("g");
+        
+        airspeedUnitCombo.getItems().addAll("m/s", "mph", "ft/s", "kph");
+        airspeedUnitCombo.setValue("m/s");
+    }
+
+    private void initializeLoggingControls() {
         DataLogger logger = sharedElements.getDataLogger();
         logFilePathField.setText(logger.getCurrentFilePath());
         appendTimestampCheckbox.setSelected(true);
         
-        // Set up event handlers
         browseButton.setOnAction(e -> handleDirectorySelection());
         logFilePathField.setOnAction(e -> handleManualPathEntry());
         appendTimestampCheckbox.setOnAction(e -> {
             sharedElements.getDataLogger().setAppendTimestamp(appendTimestampCheckbox.isSelected());
         });
     }
+
+    //Control handlers
+    private void handleSerialConnect() {
+        String selectedPort = serialPortCombo.getValue();
+        if (selectedPort != null && !selectedPort.isEmpty()) {
+            connectToSerialPort(selectedPort);
+        } else {
+            showError("Please select a port first");
+        }
+    }
+
+    private void handleLoadCellCalibration() {
+        try {
+            double inputWeight = Double.parseDouble(knownWeightField.getText());
+            double weightInGrams = convertToGrams(inputWeight, weightUnitCombo.getValue());
+            double currentThrust = Double.parseDouble(sharedElements.thrustProperty().get());
+            double calibration = weightInGrams / currentThrust;
+            
+            sharedElements.setLoadCellCalibration(calibration);
+            updateCalibrationLabels();
+        } catch (NumberFormatException ex) {
+            showError("Please enter a valid weight value");
+        }
+    }
+
+    private void handleCurrentCalibration() {
+        try {
+            double knownCurrent = Double.parseDouble(knownCurrentField.getText());
+            float rawVoltage = Float.parseFloat(sharedElements.currentProperty().get());
+            
+            // Calculate new sensitivity (V/A)
+            double newSensitivity = (rawVoltage - 0.6) / knownCurrent;
+            
+            sharedElements.setCurrentSensorSensitivity(newSensitivity);
+            updateCalibrationLabels();
+        } catch (NumberFormatException ex) {
+            showError("Please enter a valid current value");
+        }
+    }
+
+    private void handleVoltageCalibration() {
+        try {
+            double knownVoltage = Double.parseDouble(knownVoltageField.getText());
+            float rawVoltage = Float.parseFloat(sharedElements.voltageProperty().get());
+            
+            double newRatio = rawVoltage / knownVoltage;
+            
+            sharedElements.setVoltageDividerRatio(newRatio);
+            updateCalibrationLabels();
+        } catch (NumberFormatException ex) {
+            showError("Please enter a valid voltage value");
+        }
+    }
+
+    private void handlePitotCalibration(boolean isIncoming) {
+        try {
+            TextField field = isIncoming ? incomingKnownSpeedField : wakeKnownSpeedField;
+            double inputSpeed = Double.parseDouble(field.getText());
+            double speedInMS = convertToMetersPerSecond(inputSpeed, airspeedUnitCombo.getValue());
+            
+            float currentVoltage = isIncoming ? 
+                Float.parseFloat(sharedElements.incomingAirspeedProperty().get()) :
+                Float.parseFloat(sharedElements.wakeAirspeedProperty().get());
+            
+            // Calculate calibration factor using Bernoulli's equation
+            double airDensity = 1.225; // kg/m³ at sea level, 15°C
+            double pressure = 0.5 * airDensity * speedInMS * speedInMS;
+            double calibrationFactor = pressure / currentVoltage;
+            
+            if (isIncoming) {
+                sharedElements.setIncomingPitotCalibration(calibrationFactor);
+            } else {
+                sharedElements.setWakePitotCalibration(calibrationFactor);
+            }
+            
+            updateCalibrationLabels();
+        } catch (NumberFormatException ex) {
+            showError("Please enter a valid airspeed value");
+        }
+    }
+
+    private void handleSaveCalibration() {
+        sharedElements.saveCalibration("calibration.txt");
+        showInfo("Calibration saved successfully");
+    }
+
+    private void handleLoadCalibration() {
+        sharedElements.loadCalibration("calibration.txt");
+        updateCalibrationLabels();
+        showInfo("Calibration loaded successfully");
+    }
+
+    private void handleResetCalibration() {
+        sharedElements.resetCalibration();
+        updateCalibrationLabels();
+        showInfo("Calibration reset to defaults");
+    }
+
+    private void handleDirectorySelection() {
+        try {
+            File selectedDirectory = showDirectoryChooser();
+            if (selectedDirectory != null) {
+                updateLogDirectory(selectedDirectory.getAbsolutePath());
+            }
+        } catch (Exception ex) {
+            showManualDirectoryInputDialog();
+        }
+    }
+
 
     private void refreshSerialPorts(){
         String currentSelection = serialPortCombo.getValue();
@@ -189,17 +260,6 @@ public class Configuration extends BaseController {
             showError("Failed to connect to " + portName);
             // Clear selection to indicate failed connection
             serialPortCombo.setValue(null);
-        }
-    }
-
-    private void handleDirectorySelection() {
-        try {
-            File selectedDirectory = showDirectoryChooser();
-            if (selectedDirectory != null) {
-                updateLogDirectory(selectedDirectory.getAbsolutePath());
-            }
-        } catch (Exception ex) {
-            showManualDirectoryInputDialog();
         }
     }
 
@@ -288,27 +348,7 @@ public class Configuration extends BaseController {
             default -> value;
         };
     }
-
-    private void calibratePitotSensor(boolean isIncoming) {
-        try {
-            TextField field = isIncoming ? incomingKnownSpeedField : wakeKnownSpeedField;
-            double inputSpeed = Double.parseDouble(field.getText());
-            // Convert to m/s for internal storage
-            double speedInMS = convertToMetersPerSecond(inputSpeed, airspeedUnitCombo.getValue());
-            float currentVoltage;
-            if (isIncoming) {
-                currentVoltage = Float.parseFloat(sharedElements.incomingAirspeedProperty().get());
-            } else {
-                currentVoltage = Float.parseFloat(sharedElements.wakeAirspeedProperty().get());
-            }
-            
-            sharedElements.calibratePitotSensor(isIncoming, speedInMS, currentVoltage);
-            updateCalibrationLabels();
-        } catch (NumberFormatException ex) {
-            showError("Please enter a valid airspeed value");
-        }
-    }
-
+    
     private void updateCalibrationLabels() {
         // Add unit information to labels
         String weightUnit = weightUnitCombo.getValue();
