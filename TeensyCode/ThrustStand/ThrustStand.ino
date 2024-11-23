@@ -97,8 +97,8 @@ void loop() {
     lastRPMcalc = currentTime;
   }
 
-  // Handle PID control for DYNO mode
-  if (currentMode == "DYNO" && motorEnabled && targetRPM > 0) {
+  // Handle PID control for LAB mode
+  if (currentMode == "LAB" && motorEnabled && targetRPM > 0) {
     float deltaTime = (currentTime - lastPIDTime) / 1000000.0; // Convert to seconds
     
     if (deltaTime >= 0.05) { // Update PID every 50ms
@@ -173,8 +173,8 @@ void processMSG() {
   String value = inputBuffer.substring(4);  // Get value after prefix
   
   if (cmd.equals("THR:")) {
-    // Only process throttle commands in LAB mode
-    if (currentMode == "LAB" && motorEnabled) {
+    // Only process throttle commands in DYNO mode
+    if (currentMode == "DYNO" && motorEnabled) {
       int throttle = value.toInt();
       setESCThrottle(throttle);
     }
@@ -199,7 +199,7 @@ void processMSG() {
     }
   }
   else if (cmd.equals("RPM:")) {
-    if (currentMode == "DYNO") {
+    if (currentMode == "LAB") {
       targetRPM = value.toFloat();
     }
   }
