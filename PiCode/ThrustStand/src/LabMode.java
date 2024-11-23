@@ -48,7 +48,22 @@ public class LabMode extends BaseController{
 
         serialController.addDataReceivedListener(this::onDataReceived);
 
-        //Add action handlers
+        //Generate RPM values from 1000 to 30000 in increments of 1000 for combo box
+        int minRPM = 1000;
+        int maxRPM = 30000;
+        int delta = 1000; 
+        for (minRPM = 1000; minRPM <= maxRPM; minRPM += delta) {
+            rpmCombo.getItems().add(minRPM);
+        }
+        rpmCombo.setValue(1000); // Set default value
+
+        //Action handler for RPM selection
+        rpmCombo.setOnAction(event -> {
+            int selectedRPM = rpmCombo.getValue();
+            serialController.sendData("RPM:" + selectedRPM);
+        });
+
+        //Action handlers
         tearButton.setOnAction(e -> sharedElements.handleTearButton());
         holdToggle.setOnAction(e -> sharedElements.handleHoldToggle());
         loggingToggle.setOnAction(e -> sharedElements.handleLoggerToggle());
