@@ -171,7 +171,7 @@ public class Configuration extends BaseController {
     private void handleVoltageCalibration() {
         try {
             double knownVoltage = Double.parseDouble(knownVoltageField.getText());
-            float rawVoltage = Float.parseFloat(sharedElements.voltageProperty().get());
+            float rawVoltage = sharedElements.getRawVoltage();
             
             double newRatio = rawVoltage / knownVoltage;
             

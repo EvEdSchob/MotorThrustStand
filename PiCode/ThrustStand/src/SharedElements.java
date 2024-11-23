@@ -11,7 +11,7 @@ import javafx.beans.property.*;
 public class SharedElements{
     private static SharedElements instance;
 
-    // Updated naming for calibration constants
+    //Simplifies calibration constant handling
     private static final class CalibrationConstants {
         private double loadCellCalibration = 1.0;
         private double incomingPitotCalibration = 1.0;  // Changed from pitot1
@@ -21,6 +21,7 @@ public class SharedElements{
     }
     private final CalibrationConstants calibration = new CalibrationConstants();
 
+    private float lastRawVoltage = 0.0f;
 
     private boolean holdEnabled = false;
 
@@ -308,7 +309,7 @@ public class SharedElements{
     private String convertVoltageToVoltage(float voltage) {
         // Convert based on voltage divider ratio
         double actualVoltage = voltage / calibration.voltageDividerRatio;
-        
+
         return String.format("%.2f", actualVoltage);
     }
 
@@ -317,6 +318,7 @@ public class SharedElements{
     public void updateMeasurements(long rawThrust, float incomingPitotV, float wakePitotV, 
                                  float currentV, float voltageV, float rpm) {
         if (!holdEnabled) {
+            lastRawVoltage = voltageV; //Store the raw value
             thrustProperty.set(convertRawToThrust(rawThrust));
             incomingAirspeedProperty.set(convertVoltageToAirspeed(incomingPitotV, true));
             wakeAirspeedProperty.set(convertVoltageToAirspeed(wakePitotV, false));
@@ -379,6 +381,10 @@ public class SharedElements{
         } else {
             calibration.wakePitotCalibration = calibrationFactor;
         }
+    }
+
+    public float getRawVoltage(){
+        return lastRawVoltage;
     }
 
     public double getLoadCellCalibration() {
