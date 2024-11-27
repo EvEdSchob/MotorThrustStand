@@ -32,6 +32,7 @@ public class DynoMode extends BaseController{
     
     @FXML
     public void initialize(){
+        serialController.setMode("DYNO");
         sharedElements.initializeControls(
             thrustField,
             tearButton,

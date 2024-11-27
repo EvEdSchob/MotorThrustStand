@@ -30,6 +30,7 @@ public class LabMode extends BaseController{
 
     @FXML
     public void initialize(){
+        serialController.setMode("LAB");
         sharedElements.initializeControls(
             thrustField,
             tearButton,
