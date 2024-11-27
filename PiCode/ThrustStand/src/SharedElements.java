@@ -315,15 +315,38 @@ public class SharedElements{
 
     
     //Update all measurements with converted values
-    public void updateMeasurements(long rawThrust, float incomingPitotV, float wakePitotV, 
-                                 float currentV, float voltageV, float rpm) {
+    public void updateMeasurements(long rawThrust, float incomingPitotV, float wakePitotV, float currentV, float voltageV, float rpm) {
+        
+        lastRawVoltage = voltageV; //Saves the last raw value of the input voltage for calibration purposes
+        
+        //Convert all values
+        String thrustValue = convertRawToThrust(rawThrust);
+        String incomingSpeed = convertVoltageToAirspeed(incomingPitotV, true);
+        String wakeSpeed = convertVoltageToAirspeed(wakePitotV, false);
+        String currentValue = convertVoltageToCurrent(currentV);
+        String voltageValue = convertVoltageToVoltage(voltageV);
+
+        //Update UI fields only if hold is disabled
         if (!holdEnabled) {
-            lastRawVoltage = voltageV; //Store the raw value
-            thrustProperty.set(convertRawToThrust(rawThrust));
-            incomingAirspeedProperty.set(convertVoltageToAirspeed(incomingPitotV, true));
-            wakeAirspeedProperty.set(convertVoltageToAirspeed(wakePitotV, false));
-            currentProperty.set(convertVoltageToCurrent(currentV));
-            voltageProperty.set(convertVoltageToVoltage(voltageV));
+            thrustProperty.set(thrustValue);
+            incomingAirspeedProperty.set(incomingSpeed);
+            wakeAirspeedProperty.set(wakeSpeed);
+            currentProperty.set(currentValue);
+            voltageProperty.set(voltageValue);
+        }
+
+        //Log data to CSV when toggle is enabled
+        if (loggerActiveProperty.get()) {
+            dataLogger.logData(
+                thrustValue,
+                thrustUnitCombo.getValue(),
+                incomingSpeed,
+                wakeSpeed, 
+                incomingAirspeedUnitCombo.getValue(),
+                currentValue,
+                voltageValue,
+                bladeCountCombo.getValue(),
+                String.format("%.1f", rpm));
         }
     }
 
