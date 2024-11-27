@@ -1,3 +1,9 @@
+/*  Title:  SharedElements.Java
+ *  Author: Evan Schober
+ *  Email:  evan.e.schober@wmich.edu
+ *  Parent Class: ThrustStand.java
+ *  Description: Class used to define and managed shared resources between various scene controllers
+ */
 import javafx.scene.control.*;
 
 import java.io.BufferedReader;

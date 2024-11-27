@@ -1,4 +1,10 @@
-
+/*  Title:  SerialController.Java
+ *  Author: Evan Schober
+ *  Email:  evan.e.schober@wmich.edu
+ *  Parent Class: ThrustStand.java
+ *  Description: 
+ *  
+ */
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortEvent;
 import com.fazecast.jSerialComm.SerialPortMessageListener;

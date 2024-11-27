@@ -1,3 +1,11 @@
+/*  Title:  DataLogger.Java
+ *  Author: Evan Schober
+ *  Email:  evan.e.schober@wmich.edu
+ *  Parent Class: ThrustStand.java
+ *  Description: This class handles logging data from the thrust stand to a CSV file
+ *  Referenced by SharedElements.java
+ */
+
 import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

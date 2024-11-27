@@ -2,7 +2,7 @@
  * Title: ThrustStand.Java
  * Author: Evan Schober
  * Email: evan.e.schober@wmich.edu
- * Description: This is the parent class for the thrust stand it initializes the primary
+ * Description: This is the parent class for the thrust stand. It initializes the primary
  * application stage and then calls Launcher.fxml and its corresponding controller class
  * to fill the stage with the launcher scene. 
  */
