@@ -72,16 +72,33 @@ public class SerialController {
         }
     }
 
-    public boolean sendData(String data){
-        if(serialPort != null && serialPort.isOpen()){
-            String dataToSend = data + "\n";
-            byte[] bytes = dataToSend.getBytes(StandardCharsets.UTF_8);
+    // public boolean sendData(String data){
+    //     if(serialPort != null && serialPort.isOpen()){
+    //         String dataToSend = data + "\n";
+    //         byte[] bytes = dataToSend.getBytes(StandardCharsets.UTF_8);
+    //         int bytesWritten = serialPort.writeBytes(bytes, bytes.length);
+    //         if(bytesWritten == -1){
+    //             System.err.println("Failed to write data to serial port");
+    //             return false;
+    //         } else {
+    //             System.out.println("Sent: " + dataToSend.trim());
+    //             return true;
+    //         }
+    //     } else {
+    //         System.err.println("Serial port is not open");
+    //         return false;
+    //     }
+    // }
+
+    public boolean sendData(String data) {
+        if(serialPort != null && serialPort.isOpen()) {
+            byte[] bytes = data.getBytes(StandardCharsets.UTF_8);
             int bytesWritten = serialPort.writeBytes(bytes, bytes.length);
-            if(bytesWritten == -1){
+            if(bytesWritten == -1) {
                 System.err.println("Failed to write data to serial port");
                 return false;
             } else {
-                System.out.println("Sent: " + dataToSend.trim());
+                System.out.println("Sent: " + data.trim());
                 return true;
             }
         } else {
