@@ -1,6 +1,8 @@
 #include <Wire.h>
 #include <HX711.h>
 
+const int LED_PIN = 13; //On-board LED
+
 //Pin Definitions
 const int PITOT_FRONT = A0;
 const int PITOT_REAR = A1;
@@ -15,10 +17,10 @@ const int ESC_OUT = 2;
 HX711 loadCell;
 
 //Speed Controller output
-const int PWM_FREQ = 50; //50Hz output for standard RC control
+const float PWM_FREQ = 50.0f; //50Hz output for standard RC control
 const int PWM_RES = 12; //12-bit PWM resolution
-const int MIN_PULSE = 164; //~1000us at 50Hz
-const int MAX_PULSE = 328; //~2000us at 50Hz
+const int MIN_PULSE = 205; //~1000us at 50Hz
+const int MAX_PULSE = 410; //~2000us at 50Hz
 
 const unsigned long SEND_INTERVAL = 20; //Send interval in ms. 20ms = 1/50th of a second
 
@@ -45,7 +47,7 @@ unsigned long lastRPMcalc = 0; // Added missing variable declaration
 
 // Global variables for control modes and PID
 bool motorEnabled = false;
-String currentMode = "LAB"; // Default to LAB mode
+String currentMode = "NONE"; // Default to LAB mode
 float targetRPM = 0;
 
 // PID constants
@@ -71,6 +73,9 @@ void FASTRUN rpmInterrupt() {
 void setup() {
   Serial.begin(2000000);
 
+  pinMode(LED_PIN, OUTPUT);
+  digitalWrite(LED_PIN, LOW);
+
   //Configure ADC
   analogReadResolution(12);
 
@@ -78,7 +83,14 @@ void setup() {
   analogWriteFrequency(ESC_OUT, PWM_FREQ);
   analogWriteResolution(PWM_RES);
   pinMode(ESC_OUT, OUTPUT);
-  analogWrite(ESC_OUT, MIN_PULSE);
+  //analogWrite(ESC_OUT, MIN_PULSE); //Auto-set min PWM pulse 
+  
+  //Direct PWM minimum calculation
+  float period = 1000000.0f / PWM_FREQ;  // Period in microseconds
+  float dutyCycle = 1000.0f / period;    // 1000us pulse width
+  int pwmValue = (dutyCycle * (1 << PWM_RES));
+  analogWrite(ESC_OUT, pwmValue);
+  
 
   //RPM "Trip Wire"
   pinMode(IR_RECIV, INPUT_PULLUP);
@@ -169,12 +181,14 @@ void checkForMSG() {
 }
 
 void processMSG() {
+  blinkLED(1, 100);
   String cmd = inputBuffer.substring(0, 4); // Get command prefix
   String value = inputBuffer.substring(4);  // Get value after prefix
   
   if (cmd.equals("THR:")) {
-    // Only process throttle commands in DYNO mode
+    // Only process direct throttle commands in DYNO mode
     if (currentMode == "DYNO" && motorEnabled) {
+      blinkLED(2, 100);
       int throttle = value.toInt();
       setESCThrottle(throttle);
     }
@@ -205,10 +219,35 @@ void processMSG() {
   }
 }
 
+// void setESCThrottle(int throttlePercent) {
+//   throttlePercent = constrain(throttlePercent, 0, 100);
+//   int pulseWidth = map(throttlePercent, 0, 100, MIN_PULSE, MAX_PULSE);
+//   analogWrite(ESC_OUT, pulseWidth);
+// }
+
 void setESCThrottle(int throttlePercent) {
+  // Constrain input range
   throttlePercent = constrain(throttlePercent, 0, 100);
-  int pulseWidth = map(throttlePercent, 0, 100, MIN_PULSE, MAX_PULSE);
-  analogWrite(ESC_OUT, pulseWidth);
+  
+  // Calculate pulse width (1000-2000us)
+  float pulseWidth = 1000.0f + (throttlePercent * 10.0f);
+  
+  // Calculate period and duty cycle
+  float period = 1000000.0f / PWM_FREQ;  // Period in microseconds
+  float dutyCycle = pulseWidth / period;
+  
+  // Convert to PWM value
+  int pwmValue = (dutyCycle * (1 << PWM_RES));
+  
+  // Debug output
+  Serial.print("Throttle: ");
+  Serial.print(throttlePercent);
+  Serial.print("%, Pulse: ");
+  Serial.print(pulseWidth);
+  Serial.print("us, PWM: ");
+  Serial.println(pwmValue);
+  
+  analogWrite(ESC_OUT, pwmValue);
 }
 
 void sendData() {
@@ -233,3 +272,12 @@ String packageData(float pitot1, float pitot2, float current, float voltage, lon
          String(rawLoadCell) + "," + String(rpm, 1);
 }
 
+//Blinks LED for debugging purposes
+void blinkLED(int times, int delayMs) {
+  for(int i = 0; i < times; i++) {
+    digitalWrite(LED_PIN, HIGH);
+    delay(delayMs);
+    digitalWrite(LED_PIN, LOW);
+    delay(delayMs);
+  }
+}
