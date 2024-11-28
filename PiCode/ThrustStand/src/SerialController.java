@@ -177,7 +177,8 @@ public class SerialController {
 
     // Methods to send commands to Teensy
     public boolean setThrottle(int percentage) {
-        return sendData(CMD_SET_THROTTLE + percentage);
+        String command = String.format("THR:%d\n", percentage); //May change back to previous format for consistency consider updating other methods to match this format
+        return sendData(command);
     }
 
     public boolean setMode(String mode) {
