@@ -11,7 +11,7 @@ const int V_SENS = A3; //Voltage Sensor
 const int HX711_DAT = 18;
 const int HX711_CLK = 19;
 const int IR_RECIV = 5;
-const int ESC_OUT = 2;
+const int ESC_PIN = 2;
 
 //HX711 setup
 HX711 loadCell;
@@ -76,21 +76,15 @@ void setup() {
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, LOW);
 
+  // Configure PWM output
+  analogWriteFrequency(ESC_PIN, PWM_FREQ);
+  analogWriteResolution(PWM_RES);
+  
+  // Set initial minimum pulse
+  setESCThrottle(0);
+  
   //Configure ADC
   analogReadResolution(12);
-
-  //Configure PWM output
-  analogWriteFrequency(ESC_OUT, PWM_FREQ);
-  analogWriteResolution(PWM_RES);
-  pinMode(ESC_OUT, OUTPUT);
-  //analogWrite(ESC_OUT, MIN_PULSE); //Auto-set min PWM pulse 
-  
-  //Direct PWM minimum calculation
-  float period = 1000000.0f / PWM_FREQ;  // Period in microseconds
-  float dutyCycle = 1000.0f / period;    // 1000us pulse width
-  int pwmValue = (dutyCycle * (1 << PWM_RES));
-  analogWrite(ESC_OUT, pwmValue);
-  
 
   //RPM "Trip Wire"
   pinMode(IR_RECIV, INPUT_PULLUP);
@@ -99,6 +93,8 @@ void setup() {
   //Configure load cell ADC
   loadCell.begin(HX711_DAT, HX711_CLK);
   loadCell.set_gain(128); // Corrected from gain() to set_gain()
+
+  blinkLED(2, 100);
 }
 
 void loop() {
@@ -181,14 +177,22 @@ void checkForMSG() {
 }
 
 void processMSG() {
-  blinkLED(1, 100);
-  String cmd = inputBuffer.substring(0, 4); // Get command prefix
-  String value = inputBuffer.substring(4);  // Get value after prefix
-  
-  if (cmd.equals("THR:")) {
-    // Only process direct throttle commands in DYNO mode
-    if (currentMode == "DYNO" && motorEnabled) {
-      blinkLED(2, 100);
+  String cmd = inputBuffer.substring(0, 4);
+  String value = inputBuffer.substring(4);
+  cmd.trim();
+  value.trim();
+
+  if (cmd.equals("MOTO")) {
+    if (value.equals(":ON")) {
+      blinkLED(1, 50);
+      motorEnabled = true;
+    } else if (value.equals(":OFF")) {
+      motorEnabled = false;
+      setESCThrottle(0); // Safety: disable motor output
+    }
+  }
+  else if (cmd.equals("THR:")) {
+    if (motorEnabled) {  // Only check if motor is enabled
       int throttle = value.toInt();
       setESCThrottle(throttle);
     }
@@ -204,14 +208,6 @@ void processMSG() {
   else if (cmd.equals("BLAD")) {
     numBlades = value.toInt();
   }
-  else if (cmd.equals("MOTO")) {
-    if (value.equals("ON")) {
-      motorEnabled = true;
-    } else if (value.equals("OFF")) {
-      motorEnabled = false;
-      setESCThrottle(0); // Safety: disable motor output
-    }
-  }
   else if (cmd.equals("RPM:")) {
     if (currentMode == "LAB") {
       targetRPM = value.toFloat();
@@ -219,35 +215,15 @@ void processMSG() {
   }
 }
 
-// void setESCThrottle(int throttlePercent) {
-//   throttlePercent = constrain(throttlePercent, 0, 100);
-//   int pulseWidth = map(throttlePercent, 0, 100, MIN_PULSE, MAX_PULSE);
-//   analogWrite(ESC_OUT, pulseWidth);
-// }
-
 void setESCThrottle(int throttlePercent) {
-  // Constrain input range
   throttlePercent = constrain(throttlePercent, 0, 100);
+  int pulseWidth = map(throttlePercent, 0, 100, 1000, 2000);
   
-  // Calculate pulse width (1000-2000us)
-  float pulseWidth = 1000.0f + (throttlePercent * 10.0f);
-  
-  // Calculate period and duty cycle
-  float period = 1000000.0f / PWM_FREQ;  // Period in microseconds
-  float dutyCycle = pulseWidth / period;
-  
-  // Convert to PWM value
+  float period = 1000000.0f / PWM_FREQ;
+  float dutyCycle = float(pulseWidth) / period;
   int pwmValue = (dutyCycle * (1 << PWM_RES));
   
-  // Debug output
-  Serial.print("Throttle: ");
-  Serial.print(throttlePercent);
-  Serial.print("%, Pulse: ");
-  Serial.print(pulseWidth);
-  Serial.print("us, PWM: ");
-  Serial.println(pwmValue);
-  
-  analogWrite(ESC_OUT, pwmValue);
+  analogWrite(ESC_PIN, pwmValue);
 }
 
 void sendData() {
