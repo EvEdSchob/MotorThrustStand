@@ -4,9 +4,6 @@
  *  Parent Class: ThrustStand.java
  *  Description: Controller class for the dyno mode 
  */
-
-
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 public class DynoMode extends BaseController {
@@ -52,22 +49,18 @@ public class DynoMode extends BaseController {
         );
 
         // Set mode to DYNO
-        serialController.sendData("MODE:DYNO\n");
+        serialController.setMode("DYNO");
         
         // Add throttle slider listener
         throttleSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
             if (motorToggle.isSelected()) {
-                String cmd = String.format("THR:%d\n", newVal.intValue());
-                System.out.println("Sending: " + cmd);
-                serialController.sendData(cmd);
+                serialController.setThrottle(newVal.intValue());
             }
         });
         
         // Motor toggle listener
         motorToggle.setOnAction(event -> {
-            String cmd = motorToggle.isSelected() ? "MOTO:ON\n" : "MOTO:OFF\n";
-            System.out.println("Sending: " + cmd);
-            serialController.sendData(cmd);
+            sharedElements.handleMotorToggle();
         });
 
         // Add data received listener for telemetry
@@ -79,8 +72,7 @@ public class DynoMode extends BaseController {
         loggingToggle.setOnAction(e -> sharedElements.handleLoggerToggle());
         
         bladeCountCombo.setOnAction(event -> {
-            int blades = bladeCountCombo.getValue();
-            serialController.sendData("BLAD:" + blades + "\n");
+            serialController.setBladeCount(bladeCountCombo.getValue());
         });
     }
 
@@ -94,7 +86,7 @@ public class DynoMode extends BaseController {
         try {
             // Turn off motor before returning
             if (motorToggle.isSelected()) {
-                serialController.sendData("MOTO:OFF\n");
+                serialController.setMotor(false);
                 motorToggle.setSelected(false);
             }
             thrustStand.changeScene("fxml/Launcher.fxml");

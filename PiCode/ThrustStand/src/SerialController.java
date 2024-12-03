@@ -34,7 +34,7 @@ public class SerialController {
     private static final String CMD_SET_MODE = "MODE:";     // MODE:LAB or MODE:DYNO
     private static final String CMD_SET_BLADES = "BLADE:";  // BLADE:2 for 2 blades
     private static final String CMD_MOTOR = "MOTOR:";       // MOTOR:ON or MOTOR:OFF
-
+    private static final String CMD_SET_RPM = "RPM:";          // RPM:1000 for target RPM
     
     
     private SerialController() {}
@@ -90,7 +90,7 @@ public class SerialController {
     //     }
     // }
 
-    public boolean sendData(String data) {
+    private boolean sendData(String data) {
         if(serialPort != null && serialPort.isOpen()) {
             byte[] bytes = data.getBytes(StandardCharsets.UTF_8);
             int bytesWritten = serialPort.writeBytes(bytes, bytes.length);
@@ -177,22 +177,25 @@ public class SerialController {
 
     // Methods to send commands to Teensy
     public boolean setThrottle(int percentage) {
-        String command = String.format("THR:%d\n", percentage); //May change back to previous format for consistency consider updating other methods to match this format
-        return sendData(command);
+        return sendData(String.format(CMD_SET_THROTTLE + percentage + "\n"));
     }
 
     public boolean setMode(String mode) {
         if (mode.equals("LAB") || mode.equals("DYNO")) {
-            return sendData(CMD_SET_MODE + mode);
+            return sendData(CMD_SET_MODE + mode + "\n");
         }
         return false;
     }
 
     public boolean setBladeCount(int blades) {
-        return sendData(CMD_SET_BLADES + blades);
+        return sendData(CMD_SET_BLADES + blades + "\n");
     }
 
     public boolean setMotor(boolean on) {
-        return sendData(CMD_MOTOR + (on ? "ON" : "OFF"));
+        return sendData(CMD_MOTOR + (on ? "ON" : "OFF") + "\n");
+    }
+
+    public boolean setRPM(int rpm) {
+        return sendData(CMD_SET_RPM + rpm + "\n");
     }
 }

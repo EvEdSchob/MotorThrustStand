@@ -61,7 +61,7 @@ public class LabMode extends BaseController{
         //Action handler for RPM selection
         rpmCombo.setOnAction(event -> {
             int selectedRPM = rpmCombo.getValue();
-            serialController.sendData("RPM:" + selectedRPM);
+            serialController.setRPM(selectedRPM);
         });
 
         //Action handlers
@@ -69,8 +69,7 @@ public class LabMode extends BaseController{
         holdToggle.setOnAction(e -> sharedElements.handleHoldToggle());
         loggingToggle.setOnAction(e -> sharedElements.handleLoggerToggle());
         motorToggle.setOnAction(event -> {
-            boolean isSelected = motorToggle.isSelected();
-            serialController.setMotor(isSelected);
+            serialController.setMotor(motorToggle.isSelected());
             sharedElements.handleMotorToggle();
         });
 
@@ -81,8 +80,12 @@ public class LabMode extends BaseController{
     void returnToMainBtn(ActionEvent rtn){
         System.out.println("Returning to launcher");
         try {
+            // Turn off motor before returning
+            if (motorToggle.isSelected()) {
+                serialController.setMotor(false);
+                motorToggle.setSelected(false);
+            }
             thrustStand.changeScene("fxml/Launcher.fxml");
-            
         } catch (Exception e) {
             e.printStackTrace();
         }
