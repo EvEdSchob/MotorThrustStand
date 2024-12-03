@@ -143,8 +143,14 @@ public class Configuration extends BaseController {
         try {
             double inputWeight = Double.parseDouble(knownWeightField.getText());
             double weightInGrams = convertToGrams(inputWeight, weightUnitCombo.getValue());
-            double currentThrust = Double.parseDouble(sharedElements.thrustProperty().get());
-            double calibration = weightInGrams / currentThrust;
+
+            long rawThrust = sharedElements.getRawThrust();
+            if (rawThrust == 0){
+                showError("Invalid raw thrust reading (zero)");
+                return;
+            }
+            
+            double calibration = weightInGrams / rawThrust;
             
             sharedElements.setLoadCellCalibration(calibration);
             updateCalibrationLabels();
@@ -156,8 +162,11 @@ public class Configuration extends BaseController {
     private void handleCurrentCalibration() {
         try {
             double knownCurrent = Double.parseDouble(knownCurrentField.getText());
-            float rawVoltage = Float.parseFloat(sharedElements.currentProperty().get());
-            
+            if (knownCurrent == 0) {
+                showError("Calibration current cannot be zero");
+            }
+            float rawVoltage = sharedElements.getRawCurrent();
+
             // Calculate new sensitivity (V/A)
             double newSensitivity = (rawVoltage - 0.6) / knownCurrent;
             
