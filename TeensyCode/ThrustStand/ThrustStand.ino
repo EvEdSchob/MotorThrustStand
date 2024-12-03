@@ -177,21 +177,31 @@ void checkForMSG() {
 }
 
 void processMSG() {
-  String cmd = inputBuffer.substring(0, 4);
-  String value = inputBuffer.substring(4);
+  //Find the position of the colon
+  int colonPos = inputBuffer.indexOf(':');
+  if (colonPos == -1) {
+      //No colon found, invalid command
+      return;
+  }
+
+  //Split into command and value
+  String cmd = inputBuffer.substring(0, colonPos);
+  String value = inputBuffer.substring(colonPos + 1);
+  
+  //Remove whitespace characters
   cmd.trim();
   value.trim();
 
-  if (cmd.equals("MOTO")) {
-    if (value.equals(":ON")) {
+  if (cmd.equals("MOTOR")) {
+    if (value.equals("ON")) {
       blinkLED(1, 50);
       motorEnabled = true;
-    } else if (value.equals(":OFF")) {
+    } else if (value.equals("OFF")) {
       motorEnabled = false;
       setESCThrottle(0); // Safety: disable motor output
     }
   }
-  else if (cmd.equals("THR:")) {
+  else if (cmd.equals("THR")) {
     if (motorEnabled) {  // Only check if motor is enabled
       int throttle = value.toInt();
       setESCThrottle(throttle);
@@ -208,7 +218,7 @@ void processMSG() {
   else if (cmd.equals("BLAD")) {
     numBlades = value.toInt();
   }
-  else if (cmd.equals("RPM:")) {
+  else if (cmd.equals("RPM")) {
     if (currentMode == "LAB") {
       targetRPM = value.toFloat();
     }
