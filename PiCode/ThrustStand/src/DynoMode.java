@@ -4,6 +4,7 @@
  *  Parent Class: ThrustStand.java
  *  Description: Controller class for the dyno mode 
  */
+
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 public class DynoMode extends BaseController {
@@ -52,9 +53,10 @@ public class DynoMode extends BaseController {
         serialController.setMode("DYNO");
         
         // Add throttle slider listener
-        throttleSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
-            if (motorToggle.isSelected()) {
-                serialController.setThrottle(newVal.intValue());
+        throttleSlider.valueChangingProperty().addListener((obs, wasChanging, isChanging) -> {
+            if (!isChanging && motorToggle.isSelected()) {
+                // Only send the command when the slider stops moving and motor is on
+                serialController.setThrottle((int) throttleSlider.getValue());
             }
         });
         

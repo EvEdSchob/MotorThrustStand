@@ -28,6 +28,8 @@ public class SharedElements{
     private final CalibrationConstants calibration = new CalibrationConstants();
 
     private float lastRawVoltage = 0.0f;
+    private long lastRawThrust = 0;
+    private float lastRawCurrent = 0;
 
     private boolean holdEnabled = false;
 
@@ -322,7 +324,8 @@ public class SharedElements{
     
     //Update all measurements with converted values
     public void updateMeasurements(long rawThrust, float incomingPitotV, float wakePitotV, float currentV, float voltageV, float rpm) {
-        
+        this.lastRawThrust = rawThrust;
+        this.lastRawCurrent = currentV;
         lastRawVoltage = voltageV; //Saves the last raw value of the input voltage for calibration purposes
         
         //Convert all values
@@ -414,6 +417,14 @@ public class SharedElements{
 
     public float getRawVoltage(){
         return lastRawVoltage;
+    }
+
+    public long getRawThrust(){
+        return lastRawThrust;
+    }
+
+    public float getRawCurrent(){
+        return lastRawCurrent;
     }
 
     public double getLoadCellCalibration() {
