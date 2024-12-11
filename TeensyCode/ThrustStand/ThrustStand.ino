@@ -61,7 +61,7 @@ float integral = 0;
 unsigned long lastPIDTime = 0;
 
 void FASTRUN rpmInterrupt() {
-  unsigned long currentInterruptTime = micros(); // Changed to unsigned long
+  unsigned long currentInterruptTime = micros();
   //Debounce
   if (currentInterruptTime - lastInterruptTime > DEBOUNCE_MICROS) {
     pulseCount++;
@@ -92,8 +92,7 @@ void setup() {
 
   //Configure load cell ADC
   loadCell.begin(HX711_DAT, HX711_CLK);
-  loadCell.set_gain(128); // Corrected from gain() to set_gain()
-
+  loadCell.set_gain(128);
   blinkLED(2, 100);
 }
 
@@ -132,7 +131,7 @@ void loop() {
       // Set the throttle
       setESCThrottle(throttle);
     }
-  }  // Added missing closing brace for PID control block
+  } 
 
   checkForMSG(); //Read serial for command
 
@@ -241,7 +240,7 @@ void sendData() {
   float pitot2 = readVoltage(PITOT_REAR);
   float current = readVoltage(I_SENS);
   float voltage = readVoltage(V_SENS);
-  long rawLoadCell = loadCell.read(); // Changed from thrustSensor to loadCell
+  long rawLoadCell = loadCell.read();
 
   String dataPackage = packageData(pitot1, pitot2, current, voltage, rawLoadCell, currentRPM);
   Serial.println(dataPackage);
@@ -254,7 +253,7 @@ float readVoltage(int pin) {
 
 String packageData(float pitot1, float pitot2, float current, float voltage, long rawLoadCell, float rpm) {
   return String(pitot1, 3) + "," + String(pitot2, 3) + "," + 
-         String(current, 3) + "," + String(voltage, 3) + "," + // Changed v_in to voltage
+         String(current, 3) + "," + String(voltage, 3) + "," +
          String(rawLoadCell) + "," + String(rpm, 1);
 }
 
