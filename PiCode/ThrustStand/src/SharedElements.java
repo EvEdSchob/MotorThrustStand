@@ -22,7 +22,7 @@ public class SharedElements{
         private double loadCellCalibration = 1.0;
         private double incomingPitotCalibration = 1.0;  // Changed from pitot1
         private double wakePitotCalibration = 1.0;      // Changed from pitot2
-        private double currentSensorSensitivity = 0.185;
+        private double currentSensorSensitivity = 0.02;
         private double voltageDividerRatio = 0.1;
     }
     private final CalibrationConstants calibration = new CalibrationConstants();
@@ -303,8 +303,9 @@ public class SharedElements{
 
         // Current = (Vout - Vq) / sensitivity
         // Where: Vout = measured voltage
-        //        Vq = quiescent voltage (0.6V)
-        double current = (voltage - 0.6) / calibration.currentSensorSensitivity;
+        //        Vq = quiescent voltage (0.6V - Nominal)
+        double Vq = 0.394; //Measured quiescent current from sensor
+        double current = (voltage - Vq) / calibration.currentSensorSensitivity;
         
         return String.format("%.2f", current);
     }
