@@ -168,7 +168,8 @@ public class Configuration extends BaseController {
             float rawVoltage = sharedElements.getRawCurrent();
 
             // Calculate new sensitivity (V/A)
-            double newSensitivity = (rawVoltage - 0.6) / knownCurrent;
+            double Vq = 0.394; //Measured quiescent current from sensor
+            double newSensitivity = (rawVoltage - Vq) / knownCurrent;
             
             sharedElements.setCurrentSensorSensitivity(newSensitivity);
             updateCalibrationLabels();

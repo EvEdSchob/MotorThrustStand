@@ -69,7 +69,6 @@ public class LabMode extends BaseController{
         holdToggle.setOnAction(e -> sharedElements.handleHoldToggle());
         loggingToggle.setOnAction(e -> sharedElements.handleLoggerToggle());
         motorToggle.setOnAction(event -> {
-            serialController.setMotor(motorToggle.isSelected());
             sharedElements.handleMotorToggle();
         });
 

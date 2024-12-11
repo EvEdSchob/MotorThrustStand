@@ -326,6 +326,7 @@ public class SharedElements{
     public void updateMeasurements(long rawThrust, float incomingPitotV, float wakePitotV, float currentV, float voltageV, float rpm) {
         this.lastRawThrust = rawThrust;
         this.lastRawCurrent = currentV;
+        
         lastRawVoltage = voltageV; //Saves the last raw value of the input voltage for calibration purposes
         
         //Convert all values
