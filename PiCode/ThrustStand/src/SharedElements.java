@@ -267,18 +267,29 @@ public class SharedElements{
     
 
     private String convertVoltageToAirspeed(float voltage, boolean isIncoming) {
-        // Use appropriate calibration constant based on which sensor
+        //Sensor sensitivity is 270mV/kPa = 0.270V/kPa
+        final double SENSOR_SENSITIVITY = 0.270; //V/kPa
+        final double QUIESCENT_VOLTAGE = 0.0;    //V (measure and update this value)
+
+        //Remove quiescent voltage to get differential voltage
+        double differentialVoltage = voltage - QUIESCENT_VOLTAGE;
+
+        // Convert differential voltage to pressure in Pa
+        double pressureKPa = differentialVoltage / SENSOR_SENSITIVITY;
+        //Convert kPa to Pa (1 kPa = 1000 Pa)
+        double pressurePa = pressureKPa * 1000;
+
+        //Use appropriate calibration constant based on which sensor is being calibrated
         double calibrationFactor = isIncoming ? 
             calibration.incomingPitotCalibration : calibration.wakePitotCalibration;
             
-        // Convert voltage to differential pressure
-        double pressurePa = voltage * calibrationFactor;
+        pressurePa *= calibrationFactor;
         double airDensity = 1.225; // kg/m³ at sea level, 15°C
         
-        // Calculate airspeed in m/s
+        //Calculate airspeed in m/s
         double speedMS = Math.sqrt(2 * pressurePa / airDensity);
         
-        // Convert to selected units
+        //Convert to selected units
         String unit = incomingAirspeedUnitCombo.getValue();
         double convertedSpeed = switch (unit) {
             case "mph" -> speedMS * 2.23694;

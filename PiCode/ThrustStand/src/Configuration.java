@@ -202,10 +202,17 @@ public class Configuration extends BaseController {
                 Float.parseFloat(sharedElements.incomingAirspeedProperty().get()) :
                 Float.parseFloat(sharedElements.wakeAirspeedProperty().get());
             
-            // Calculate calibration factor using Bernoulli's equation
+            //Calculate expected pressure at this speed using Bernoulli's equation
             double airDensity = 1.225; // kg/m³ at sea level, 15°C
-            double pressure = 0.5 * airDensity * speedInMS * speedInMS;
-            double calibrationFactor = pressure / currentVoltage;
+            double expectedPressurePa = 0.5 * airDensity * speedInMS * speedInMS;
+
+            //Convert voltage to pressure using sensor sensitivity
+            final double SENSOR_SENSITIVITY = 0.270; // V/kPa
+            double measuredPressureKPa = currentVoltage / SENSOR_SENSITIVITY;
+            double measuredPressurePa = measuredPressureKPa * 1000;
+
+            //Calculate calibration factor
+            double calibrationFactor = expectedPressurePa / measuredPressurePa;
             
             if (isIncoming) {
                 sharedElements.setIncomingPitotCalibration(calibrationFactor);
