@@ -157,13 +157,20 @@
                                  <VBox spacing="10.0">
                                     <children>
                                        <Label text="Current Sensor" />
+                                       <!-- Zero Current Calibration -->
                                        <HBox spacing="15.0">
-                                          <children>
-                                             <Label text="Known Current:" />
-                                             <TextField fx:id="knownCurrentField" prefWidth="150.0" />
-                                             <Label text="A" />
-                                             <Button fx:id="calibrateCurrentBtn" mnemonicParsing="false" text="Calibrate" />
-                                          </children>
+                                             <children>
+                                                <Button fx:id="calibrateCurrentZeroBtn" mnemonicParsing="false" text="Capture Zero Point" />
+                                             </children>
+                                       </HBox>
+                                       <!-- Known Current Calibration -->
+                                       <HBox spacing="15.0">
+                                             <children>
+                                                <Label text="Known Current:" />
+                                                <TextField fx:id="knownCurrentField" prefWidth="150.0" />
+                                                <Label text="A" />
+                                                <Button fx:id="calibrateCurrentBtn" mnemonicParsing="false" text="Calibrate" />
+                                             </children>
                                        </HBox>
                                        <Label fx:id="currentCalibrationLabel" text="Current calibration: " />
                                     </children>

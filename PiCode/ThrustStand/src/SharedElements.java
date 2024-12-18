@@ -23,6 +23,7 @@ public class SharedElements{
         private static final double DEFAULT_LOADCELL_SCALE = 0.002296;
         private static final double DEFAULT_INCOMING_PITOT = 1.0;
         private static final double DEFAULT_WAKE_PITOT = 1.0;
+        private static final double DEFAULT_CURRENT_ZERO_OFFSET = 0.394;
         private static final double DEFAULT_CURRENT_SENSITIVITY = 0.02;
         private static final double DEFAULT_VOLTAGE_RATIO = 0.1;
 
@@ -31,6 +32,7 @@ public class SharedElements{
         private double loadCellScale = DEFAULT_LOADCELL_SCALE;
         private double incomingPitotCalibration = DEFAULT_INCOMING_PITOT;
         private double wakePitotCalibration = DEFAULT_WAKE_PITOT;
+        private double currentSensorZeroOffset = DEFAULT_CURRENT_ZERO_OFFSET;
         private double currentSensorSensitivity = DEFAULT_CURRENT_SENSITIVITY;
         private double voltageDividerRatio = DEFAULT_VOLTAGE_RATIO;
     }
@@ -330,9 +332,8 @@ public class SharedElements{
         // Current = (Vout - Vq) / sensitivity
         // Where: Vout = measured voltage
         //        Vq = quiescent voltage (0.6V - Nominal)
-        double Vq = 0.394; //Measured quiescent current from sensor
-        double current = (voltage - Vq) / calibration.currentSensorSensitivity;
-        
+        double current = (voltage - calibration.currentSensorZeroOffset) / calibration.currentSensorSensitivity;
+
         return String.format("%.2f", current);
     }
 
@@ -401,7 +402,8 @@ public class SharedElements{
             writer.println("loadcell_scale=" + calibration.loadCellScale);
             writer.println("incoming_pitot=" + calibration.incomingPitotCalibration);
             writer.println("wake_pitot=" + calibration.wakePitotCalibration);
-            writer.println("current=" + calibration.currentSensorSensitivity);
+            writer.println("current_zero=" + calibration.currentSensorZeroOffset);
+            writer.println("current_sensitivity=" + calibration.currentSensorSensitivity);
             writer.println("voltage=" + calibration.voltageDividerRatio);
         } catch (IOException e) {
             e.printStackTrace();
@@ -421,7 +423,8 @@ public class SharedElements{
                         case "loadcell_scale" -> calibration.loadCellScale = value;
                         case "incoming_pitot" -> calibration.incomingPitotCalibration = value;
                         case "wake_pitot" -> calibration.wakePitotCalibration = value;
-                        case "current" -> calibration.currentSensorSensitivity = value;
+                        case "current_zero" -> calibration.currentSensorZeroOffset = value;
+                        case "current_sensitivity" -> calibration.currentSensorSensitivity = value;
                         case "voltage" -> calibration.voltageDividerRatio = value;
                     }
                 }
@@ -458,6 +461,14 @@ public class SharedElements{
 
     public long getCurrentRawLoadCell() {
         return lastRawThrust;
+    }
+
+    public double getCurrentSensorZeroOffset() {
+        return calibration.currentSensorZeroOffset;
+    }
+    
+    public void setCurrentSensorZeroOffset(double offset) {
+        this.calibration.currentSensorZeroOffset = offset;
     }
 
     public void setLoadCellZeroOffset(double offset){
@@ -506,6 +517,7 @@ public class SharedElements{
         calibration.loadCellScale = CalibrationConstants.DEFAULT_LOADCELL_SCALE;
         calibration.incomingPitotCalibration = CalibrationConstants.DEFAULT_INCOMING_PITOT;
         calibration.wakePitotCalibration = CalibrationConstants.DEFAULT_WAKE_PITOT;
+        calibration.currentSensorZeroOffset = CalibrationConstants.DEFAULT_CURRENT_ZERO_OFFSET;
         calibration.currentSensorSensitivity = CalibrationConstants.DEFAULT_CURRENT_SENSITIVITY;
         calibration.voltageDividerRatio = CalibrationConstants.DEFAULT_VOLTAGE_RATIO;
     }
