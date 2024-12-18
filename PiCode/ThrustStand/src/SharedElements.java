@@ -269,13 +269,13 @@ public class SharedElements{
         double zeroedValue = rawValue - calibration.loadCellZeroOffset;
         double gramsForce = zeroedValue * calibration.loadCellScale;
         
-        // Convert to selected units (lb, kg, or N)
+        //Convert to selected units (lb, kg, or N)
         String unit = thrustUnitCombo.getValue();
         double convertedValue = switch (unit) {
-            case "lb" -> gramsForce * 0.00220462;  // grams to pounds
-            case "kg" -> gramsForce * 0.001;       // grams to kg
-            case "N" -> gramsForce * 0.00981;      // grams to Newtons
-            default -> gramsForce * 0.001;         // default to kg
+            case "lb" -> gramsForce * 0.00220462;  //grams to pounds
+            case "kg" -> gramsForce * 0.001;       //grams to kg
+            case "N" -> gramsForce * 0.00981;      //grams to Newtons
+            default -> gramsForce * 0.001;         //default to kg
         };
         
         return String.format("%.2f", convertedValue);
@@ -283,18 +283,30 @@ public class SharedElements{
     
 
     private String convertVoltageToAirspeed(float voltage, boolean isIncoming) {
-        // Use appropriate calibration constant based on which sensor
+        final double SENSOR_SENSITIVITY = 0.270; //V/kPa
+        final double QUIESCENT_VOLTAGE = 0.283;  //Update this after measuring
+
+        //Remove quiescent voltage 
+        double differentialVoltage = voltage - QUIESCENT_VOLTAGE;
+        //Clamp negative values to 0 since sensors are unidirectional
+        if (differentialVoltage < 0) differentialVoltage = 0;
+        
+        //Convert voltage to pressure:
+        //1. Convert to kPa using sensitivity (V / (V/kPa) = kPa)
+        double pressureKPa = differentialVoltage / SENSOR_SENSITIVITY;
+        //2. Convert kPa to Pa
+        double pressurePa = pressureKPa * 1000;
+        
+        //Apply installation calibration factor
         double calibrationFactor = isIncoming ? 
             calibration.incomingPitotCalibration : calibration.wakePitotCalibration;
-            
-        // Convert voltage to differential pressure
-        double pressurePa = voltage * calibrationFactor;
-        double airDensity = 1.225; // kg/m³ at sea level, 15°C
+        pressurePa *= calibrationFactor;
         
-        // Calculate airspeed in m/s
+        //Calculate airspeed using Bernoulli's equation
+        double airDensity = 1.225; //kg/m³ at sea level, 15°C
         double speedMS = Math.sqrt(2 * pressurePa / airDensity);
         
-        // Convert to selected units
+        //Convert to selected units
         String unit = incomingAirspeedUnitCombo.getValue();
         double convertedSpeed = switch (unit) {
             case "mph" -> speedMS * 2.23694;
