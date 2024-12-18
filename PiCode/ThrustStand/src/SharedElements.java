@@ -19,9 +19,11 @@ public class SharedElements{
 
     //Simplifies calibration constant handling
     private static final class CalibrationConstants {
-        private double loadCellCalibration = 1.0;
-        private double incomingPitotCalibration = 1.0;  // Changed from pitot1
-        private double wakePitotCalibration = 1.0;      // Changed from pitot2
+        private double loadCellZeroOffset = 0.0;
+        private double loadCellScale = 1.0;
+        //private double loadCellCalibration = 1.0;
+        private double incomingPitotCalibration = 1.0;
+        private double wakePitotCalibration = 1.0;
         private double currentSensorSensitivity = 0.02;
         private double voltageDividerRatio = 0.1;
     }
@@ -238,6 +240,8 @@ public class SharedElements{
     }
 
     public void tearThrust(){
+        //Update zero offset to current raw value when taring
+        calibration.loadCellZeroOffset = lastRawThrust;
         thrustProperty.set("000.00");
         holdEnabled = false;
         holdActiveProperty.set(false);
@@ -250,8 +254,12 @@ public class SharedElements{
     }
 
     private String convertRawToThrust(long rawValue) {
-        // Convert raw value to grams using calibration factor
-        double gramsForce = rawValue * calibration.loadCellCalibration;
+        //Store raw value for calibration
+        lastRawThrust = rawValue;
+
+        //Apply zero offset and scaling
+        double zeroedValue = rawValue - calibration.loadCellZeroOffset;
+        double gramsForce = zeroedValue * calibration.loadCellScale;
         
         // Convert to selected units (lb, kg, or N)
         String unit = thrustUnitCombo.getValue();
@@ -267,29 +275,18 @@ public class SharedElements{
     
 
     private String convertVoltageToAirspeed(float voltage, boolean isIncoming) {
-        //Sensor sensitivity is 270mV/kPa = 0.270V/kPa
-        final double SENSOR_SENSITIVITY = 0.270; //V/kPa
-        final double QUIESCENT_VOLTAGE = 0.0;    //V (measure and update this value)
-
-        //Remove quiescent voltage to get differential voltage
-        double differentialVoltage = voltage - QUIESCENT_VOLTAGE;
-
-        // Convert differential voltage to pressure in Pa
-        double pressureKPa = differentialVoltage / SENSOR_SENSITIVITY;
-        //Convert kPa to Pa (1 kPa = 1000 Pa)
-        double pressurePa = pressureKPa * 1000;
-
-        //Use appropriate calibration constant based on which sensor is being calibrated
+        // Use appropriate calibration constant based on which sensor
         double calibrationFactor = isIncoming ? 
             calibration.incomingPitotCalibration : calibration.wakePitotCalibration;
             
-        pressurePa *= calibrationFactor;
+        // Convert voltage to differential pressure
+        double pressurePa = voltage * calibrationFactor;
         double airDensity = 1.225; // kg/m³ at sea level, 15°C
         
-        //Calculate airspeed in m/s
+        // Calculate airspeed in m/s
         double speedMS = Math.sqrt(2 * pressurePa / airDensity);
         
-        //Convert to selected units
+        // Convert to selected units
         String unit = incomingAirspeedUnitCombo.getValue();
         double convertedSpeed = switch (unit) {
             case "mph" -> speedMS * 2.23694;
@@ -338,7 +335,6 @@ public class SharedElements{
     public void updateMeasurements(long rawThrust, float incomingPitotV, float wakePitotV, float currentV, float voltageV, float rpm) {
         this.lastRawThrust = rawThrust;
         this.lastRawCurrent = currentV;
-        
         lastRawVoltage = voltageV; //Saves the last raw value of the input voltage for calibration purposes
         
         //Convert all values
@@ -383,7 +379,8 @@ public class SharedElements{
     //Save calibration to a local file
     public void saveCalibration(String filename) {
         try (PrintWriter writer = new PrintWriter(new FileWriter(filename))) {
-            writer.println("loadcell=" + calibration.loadCellCalibration);
+            writer.println("loadcell_offset=" + calibration.loadCellZeroOffset);
+            writer.println("loadcell_scale=" + calibration.loadCellScale);
             writer.println("incoming_pitot=" + calibration.incomingPitotCalibration);
             writer.println("wake_pitot=" + calibration.wakePitotCalibration);
             writer.println("current=" + calibration.currentSensorSensitivity);
@@ -402,7 +399,8 @@ public class SharedElements{
                 if (parts.length == 2) {
                     double value = Double.parseDouble(parts[1]);
                     switch (parts[0]) {
-                        case "loadcell" -> calibration.loadCellCalibration = value;
+                        case "loadcell_offset" -> calibration.loadCellZeroOffset = value;
+                        case "loadcell_scale" -> calibration.loadCellScale = value;
                         case "incoming_pitot" -> calibration.incomingPitotCalibration = value;
                         case "wake_pitot" -> calibration.wakePitotCalibration = value;
                         case "current" -> calibration.currentSensorSensitivity = value;
@@ -440,8 +438,24 @@ public class SharedElements{
         return lastRawCurrent;
     }
 
-    public double getLoadCellCalibration() {
-        return calibration.loadCellCalibration;
+    public long getCurrentRawLoadCell() {
+        return lastRawThrust;
+    }
+
+    public void setLoadCellZeroOffset(double offset){
+        this.calibration.loadCellZeroOffset = offset;
+    }
+
+    public void setLoadCellScale(double scale){
+        this.calibration.loadCellScale = scale;
+    }
+
+    public double getLoadCellZeroOffset(){
+        return calibration.loadCellZeroOffset;
+    }
+
+    public double getLoadCellScale(){
+        return calibration.loadCellScale;
     }
 
     public double getIncomingPitotCalibration() {
@@ -460,10 +474,6 @@ public class SharedElements{
         return calibration.voltageDividerRatio;
     }
 
-    public void setLoadCellCalibration(double calibration) {
-        this.calibration.loadCellCalibration = calibration;
-    }
-
     public void setCurrentSensorSensitivity(double sensitivity) {
         this.calibration.currentSensorSensitivity = sensitivity;
     }
@@ -474,7 +484,8 @@ public class SharedElements{
 
     //Reset calibration to defaults
     public void resetCalibration() {
-        calibration.loadCellCalibration = 1.0;
+        calibration.loadCellScale = 1.0;
+        calibration.loadCellZeroOffset = 0.0;
         calibration.incomingPitotCalibration = 1.0;
         calibration.wakePitotCalibration = 1.0;
         calibration.currentSensorSensitivity = 0.02;

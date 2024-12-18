@@ -21,6 +21,8 @@ public class Configuration extends BaseController {
     @FXML private Button connectPortBtn;
     
     //Load cell calibration
+    @FXML private Button calibrateZeroBtn;
+    @FXML private Label zeroOffsetLabel;
     @FXML private TextField knownWeightField;
     @FXML private Button calibrateLoadCellBtn;
     @FXML private Label loadCellCalibrationLabel;
@@ -98,6 +100,7 @@ public class Configuration extends BaseController {
     }
 
     private void initializeCalibrationButtons() {
+        calibrateZeroBtn.setOnAction(e -> handleZeroCalibration());
         calibrateLoadCellBtn.setOnAction(e -> handleLoadCellCalibration());
         calibrateCurrentBtn.setOnAction(e -> handleCurrentCalibration());
         calibrateVoltageBtn.setOnAction(e -> handleVoltageCalibration());
@@ -139,20 +142,25 @@ public class Configuration extends BaseController {
         }
     }
 
+    private void handleZeroCalibration() {
+        // Get current raw value from shared elements
+        long currentRawValue = sharedElements.getCurrentRawLoadCell();
+        sharedElements.setLoadCellZeroOffset(currentRawValue);
+        updateCalibrationLabels();
+    }
+
     private void handleLoadCellCalibration() {
         try {
             double inputWeight = Double.parseDouble(knownWeightField.getText());
             double weightInGrams = convertToGrams(inputWeight, weightUnitCombo.getValue());
-
-            long rawThrust = sharedElements.getRawThrust();
-            if (rawThrust == 0){
-                showError("Invalid raw thrust reading (zero)");
-                return;
-            }
             
-            double calibration = weightInGrams / rawThrust;
+            //Get current raw value and apply zero offset
+            long currentRawValue = sharedElements.getCurrentRawLoadCell();
+            double zeroedValue = currentRawValue - sharedElements.getLoadCellZeroOffset();
             
-            sharedElements.setLoadCellCalibration(calibration);
+            double scaleFactor = weightInGrams / zeroedValue;
+            sharedElements.setLoadCellScale(scaleFactor);
+            
             updateCalibrationLabels();
         } catch (NumberFormatException ex) {
             showError("Please enter a valid weight value");
@@ -371,8 +379,10 @@ public class Configuration extends BaseController {
         String weightUnit = weightUnitCombo.getValue();
         String speedUnit = airspeedUnitCombo.getValue();
         
-        loadCellCalibrationLabel.setText(String.format("Current calibration: %.6f (g/%s)", 
-            sharedElements.getLoadCellCalibration(), weightUnit));
+        loadCellCalibrationLabel.setText(String.format("Current zero offset: %.2f, scale factor: %.6f (g/%s)", 
+            sharedElements.getLoadCellZeroOffset(), 
+            sharedElements.getLoadCellScale(), 
+            weightUnit));
         incomingCalibrationLabel.setText(String.format("Current calibration: %.6f (Pa/(m/s)²)", 
             sharedElements.getIncomingPitotCalibration(), speedUnit));
         wakeCalibrationLabel.setText(String.format("Current calibration: %.6f (Pa/(m/s)²)", 

@@ -72,15 +72,24 @@
                         <children>
                            <VBox spacing="15.0" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="20.0">
                               <children>
+                                 <!-- Zero calibration -->
                                  <HBox alignment="CENTER_LEFT" spacing="15.0">
-                                    <children>
-                                       <Label text="Known Weight:" />
-                                       <TextField fx:id="knownWeightField" prefWidth="150.0" />
-                                       <ComboBox fx:id="weightUnitCombo" prefWidth="100.0" />
-                                       <Button fx:id="calibrateLoadCellBtn" mnemonicParsing="false" text="Calibrate" />
-                                    </children>
+                                       <children>
+                                          <Button fx:id="calibrateZeroBtn" mnemonicParsing="false" text="Calibrate Zero" />
+                                          <Label fx:id="zeroOffsetLabel" text="Current zero offset: 0.0" />
+                                       </children>
                                  </HBox>
-                                 <Label fx:id="loadCellCalibrationLabel" text="Current calibration: " />
+                                 
+                                 <!-- Known weight calibration -->
+                                 <HBox alignment="CENTER_LEFT" spacing="15.0">
+                                       <children>
+                                          <Label text="Known Weight:" />
+                                          <TextField fx:id="knownWeightField" prefWidth="150.0" />
+                                          <ComboBox fx:id="weightUnitCombo" prefWidth="100.0" />
+                                          <Button fx:id="calibrateLoadCellBtn" mnemonicParsing="false" text="Calibrate Scale" />
+                                       </children>
+                                 </HBox>
+                                 <Label fx:id="loadCellCalibrationLabel" text="Current scale factor: " />
                               </children>
                            </VBox>
                         </children>
@@ -95,7 +104,12 @@
                         <children>
                            <VBox spacing="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="20.0">
                               <children>
-                                 <ComboBox fx:id="airspeedUnitCombo" prefWidth="100.0" />
+                                 <HBox alignment="CENTER_LEFT" spacing="15.0">
+                                    <children>
+                                       <Label text="Units:" />
+                                       <ComboBox fx:id="airspeedUnitCombo" prefWidth="100.0" />
+                                    </children>
+                                 </HBox>
                                  <!-- Incoming Sensor -->
                                  <VBox spacing="10.0">
                                     <children>
