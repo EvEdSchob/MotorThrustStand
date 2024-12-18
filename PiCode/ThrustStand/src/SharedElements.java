@@ -19,14 +19,22 @@ public class SharedElements{
 
     //Simplifies calibration constant handling
     private static final class CalibrationConstants {
-        private double loadCellZeroOffset = 0.0;
-        private double loadCellScale = 1.0;
-        //private double loadCellCalibration = 1.0;
-        private double incomingPitotCalibration = 1.0;
-        private double wakePitotCalibration = 1.0;
-        private double currentSensorSensitivity = 0.02;
-        private double voltageDividerRatio = 0.1;
+        private static final double DEFAULT_LOADCELL_ZERO_OFFSET = 42363.0;
+        private static final double DEFAULT_LOADCELL_SCALE = 0.002296;
+        private static final double DEFAULT_INCOMING_PITOT = 1.0;
+        private static final double DEFAULT_WAKE_PITOT = 1.0;
+        private static final double DEFAULT_CURRENT_SENSITIVITY = 0.02;
+        private static final double DEFAULT_VOLTAGE_RATIO = 0.1;
+
+        // Instance variables initialized with default values
+        private double loadCellZeroOffset = DEFAULT_LOADCELL_ZERO_OFFSET;
+        private double loadCellScale = DEFAULT_LOADCELL_SCALE;
+        private double incomingPitotCalibration = DEFAULT_INCOMING_PITOT;
+        private double wakePitotCalibration = DEFAULT_WAKE_PITOT;
+        private double currentSensorSensitivity = DEFAULT_CURRENT_SENSITIVITY;
+        private double voltageDividerRatio = DEFAULT_VOLTAGE_RATIO;
     }
+
     private final CalibrationConstants calibration = new CalibrationConstants();
 
     private float lastRawVoltage = 0.0f;
@@ -114,7 +122,7 @@ public class SharedElements{
         //Thrust controls
         thrustField.setEditable(false);
         thrustUnitCombo.getItems().addAll("lb","kg","N");
-        thrustUnitCombo.setValue("lb");
+        thrustUnitCombo.setValue("kg");
 
         //Airspeed controls
         String[] airspeedUnitOptions = {"mph","ft/s","kph","m/s"};
@@ -484,11 +492,11 @@ public class SharedElements{
 
     //Reset calibration to defaults
     public void resetCalibration() {
-        calibration.loadCellScale = 1.0;
-        calibration.loadCellZeroOffset = 0.0;
-        calibration.incomingPitotCalibration = 1.0;
-        calibration.wakePitotCalibration = 1.0;
-        calibration.currentSensorSensitivity = 0.02;
-        calibration.voltageDividerRatio = 0.1;
+        calibration.loadCellZeroOffset = CalibrationConstants.DEFAULT_LOADCELL_ZERO_OFFSET;
+        calibration.loadCellScale = CalibrationConstants.DEFAULT_LOADCELL_SCALE;
+        calibration.incomingPitotCalibration = CalibrationConstants.DEFAULT_INCOMING_PITOT;
+        calibration.wakePitotCalibration = CalibrationConstants.DEFAULT_WAKE_PITOT;
+        calibration.currentSensorSensitivity = CalibrationConstants.DEFAULT_CURRENT_SENSITIVITY;
+        calibration.voltageDividerRatio = CalibrationConstants.DEFAULT_VOLTAGE_RATIO;
     }
 }
