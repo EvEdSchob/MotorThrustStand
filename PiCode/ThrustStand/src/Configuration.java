@@ -40,8 +40,10 @@ public class Configuration extends BaseController {
     //Electrical sensor calibration
     @FXML private TextField knownCurrentField;
     @FXML private TextField knownVoltageField;
+    @FXML private Button calibrateCurrentZeroBtn;
     @FXML private Button calibrateCurrentBtn;
     @FXML private Button calibrateVoltageBtn;
+    @FXML private Label currentZeroLabel;
     @FXML private Label currentCalibrationLabel;
     @FXML private Label voltageCalibrationLabel;
     
@@ -102,6 +104,7 @@ public class Configuration extends BaseController {
     private void initializeCalibrationButtons() {
         calibrateZeroBtn.setOnAction(e -> handleZeroCalibration());
         calibrateLoadCellBtn.setOnAction(e -> handleLoadCellCalibration());
+        calibrateCurrentZeroBtn.setOnAction(e -> handleCurrentZeroCalibration());
         calibrateCurrentBtn.setOnAction(e -> handleCurrentCalibration());
         calibrateVoltageBtn.setOnAction(e -> handleVoltageCalibration());
         calibrateIncomingBtn.setOnAction(e -> handlePitotCalibration(true));
@@ -171,19 +174,32 @@ public class Configuration extends BaseController {
         try {
             double knownCurrent = Double.parseDouble(knownCurrentField.getText());
             if (knownCurrent == 0) {
-                showError("Calibration current cannot be zero");
+                showError("Known current must be non-zero for sensitivity calibration");
+                return;
             }
             float rawVoltage = sharedElements.getRawCurrent();
 
-            // Calculate new sensitivity (V/A)
-            double Vq = 0.394; //Measured quiescent current from sensor
-            double newSensitivity = (rawVoltage - Vq) / knownCurrent;
+            //Calculate sensitivity using zero-offset voltage
+            double zeroOffset = sharedElements.getCurrentSensorZeroOffset();
+            double sensitivity = (rawVoltage - zeroOffset) / knownCurrent;
             
-            sharedElements.setCurrentSensorSensitivity(newSensitivity);
+            if (sensitivity <= 0) {
+                showError("Invalid calibration result. Check current direction and measurements.");
+                return;
+            }
+            
+            sharedElements.setCurrentSensorSensitivity(sensitivity);
             updateCalibrationLabels();
         } catch (NumberFormatException ex) {
             showError("Please enter a valid current value");
         }
+    }
+
+    private void handleCurrentZeroCalibration() {
+        float currentRawVoltage = sharedElements.getRawCurrent();
+        sharedElements.setCurrentSensorZeroOffset(currentRawVoltage);
+        currentZeroLabel.setText(String.format("%.3f V", currentRawVoltage));
+        updateCalibrationLabels();
     }
 
     private void handleVoltageCalibration() {
@@ -387,10 +403,16 @@ public class Configuration extends BaseController {
             sharedElements.getIncomingPitotCalibration(), speedUnit));
         wakeCalibrationLabel.setText(String.format("Current calibration: %.6f (Pa/(m/s)²)", 
             sharedElements.getWakePitotCalibration(), speedUnit));
-        currentCalibrationLabel.setText(String.format("Current calibration: %.6f (V/A)", 
-            sharedElements.getCurrentSensorSensitivity()));
+        currentCalibrationLabel.setText(String.format("Current calibration: Zero=%.3fV, Sensitivity=%.3f V/A", 
+                sharedElements.getCurrentSensorZeroOffset(),
+                sharedElements.getCurrentSensorSensitivity()));
+        if (currentZeroLabel != null) {
+            currentZeroLabel.setText(String.format("%.3f V", 
+                sharedElements.getCurrentSensorZeroOffset()));
+        }
         voltageCalibrationLabel.setText(String.format("Current calibration: %.6f (ratio)", 
             sharedElements.getVoltageDividerRatio()));
+        
     }
 
     private void showError(String message) {
