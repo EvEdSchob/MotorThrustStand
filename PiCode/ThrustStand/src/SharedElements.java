@@ -271,14 +271,12 @@ public class SharedElements{
         
         //Convert to selected units (lb, kg, or N)
         String unit = thrustUnitCombo.getValue();
-        double convertedValue = switch (unit) {
-            case "lb" -> gramsForce * 0.00220462;  //grams to pounds
-            case "kg" -> gramsForce * 0.001;       //grams to kg
-            case "N" -> gramsForce * 0.00981;      //grams to Newtons
-            default -> gramsForce * 0.001;         //default to kg
+        return switch (unit) {
+            case "lb" -> String.format("%.3f", gramsForce * 0.00220462);  // 1g ≈ 0.002 lb
+            case "kg" -> String.format("%.3f", gramsForce * 0.001);       // 1g = 0.001 kg
+            case "N" -> String.format("%.3f", gramsForce * 0.00981);      // 1g ≈ 0.01 N
+            default -> String.format("%.0f", gramsForce);                 // 1g for grams
         };
-        
-        return String.format("%.2f", convertedValue);
     }
     
 
