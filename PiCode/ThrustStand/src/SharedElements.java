@@ -172,11 +172,11 @@ public class SharedElements{
         if(motorToggle.isSelected()){
             //Motor is being turned on
             if (SerialController.getInstance().setMotor(true)) {
-                System.out.println("Motor Started");
+                //System.out.println("Motor Started");  //Debug
                 motorActiveProperty.set(true);    
             } else {
                 //If serial command failed, revert toggle and alert user
-                System.out.println("Failed to start motor");
+                //System.out.println("Failed to start motor");  //Debug
                 motorToggle.setSelected(false);
                 motorActiveProperty.set(false);
 
@@ -190,11 +190,11 @@ public class SharedElements{
         } else {
             //Motor is being turned off
             if(SerialController.getInstance().setMotor(false)){
-                System.out.println("Motor Stopped");
+                //System.out.println("Motor Stopped"); //Debug  
                 motorActiveProperty.set(false);
             } else {
                 //If serial command failed, revert toggle and alert user
-                System.out.println("Failed to stop motor");
+                //System.out.println("Failed to stop motor");   //Debug
                 motorToggle.setSelected(true);
                 motorActiveProperty.set(true);
                     
@@ -218,7 +218,7 @@ public class SharedElements{
             try {
                 dataLogger.startLogging();
                 loggerActiveProperty.set(true);
-                System.out.println("Data logging started: " + dataLogger.getCurrentFilePath());
+                //System.out.println("Data logging started: " + dataLogger.getCurrentFilePath());   //Debug
             } catch (IOException e) {
                 e.printStackTrace();
                 loggingToggle.setSelected(false);
@@ -234,7 +234,7 @@ public class SharedElements{
             // Stop logging data
             dataLogger.stopLogging();
             loggerActiveProperty.set(false);
-            System.out.println("Data logging stopped");
+            //System.out.println("Data logging stopped");   //Debug
         }
     }
 
@@ -352,6 +352,7 @@ public class SharedElements{
     
     //Update all measurements with converted values
     public void updateMeasurements(long rawThrust, float incomingPitotV, float wakePitotV, float currentV, float voltageV, float rpm) {
+        //System.out.println("Raw Current Value: " + currentV);  // Debug
         this.lastRawThrust = rawThrust;
         this.lastRawCurrent = currentV;
         lastRawVoltage = voltageV; //Saves the last raw value of the input voltage for calibration purposes

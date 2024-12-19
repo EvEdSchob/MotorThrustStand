@@ -90,6 +90,9 @@ public class Configuration extends BaseController {
         
         // Load current calibration values
         updateCalibrationLabels();
+
+        //Add data listener for live updates from serial
+        serialController.addDataReceivedListener(this::onDataReceived);
     }
 
     //Initialization functions
@@ -178,10 +181,16 @@ public class Configuration extends BaseController {
                 return;
             }
             float rawVoltage = sharedElements.getRawCurrent();
+            double zeroOffset = sharedElements.getCurrentSensorZeroOffset();
+
+            //System.out.println("Current Calibration:");  // Debug
+            //System.out.println("Known Current: " + knownCurrent);  // Debug
+            //System.out.println("Raw Voltage: " + rawVoltage);  // Debug
+            //System.out.println("Zero Offset: " + zeroOffset);  // Debug
 
             //Calculate sensitivity using zero-offset voltage
-            double zeroOffset = sharedElements.getCurrentSensorZeroOffset();
             double sensitivity = (rawVoltage - zeroOffset) / knownCurrent;
+            //System.out.println("Calculated Sensitivity: " + sensitivity);  // Debug
             
             if (sensitivity <= 0) {
                 showError("Invalid calibration result. Check current direction and measurements.");
@@ -197,6 +206,7 @@ public class Configuration extends BaseController {
 
     private void handleCurrentZeroCalibration() {
         float currentRawVoltage = sharedElements.getRawCurrent();
+        //System.out.println("Zero Calibration - Raw Voltage: " + currentRawVoltage);   //Debug
         sharedElements.setCurrentSensorZeroOffset(currentRawVoltage);
         currentZeroLabel.setText(String.format("%.3f V", currentRawVoltage));
         updateCalibrationLabels();
@@ -429,9 +439,13 @@ public class Configuration extends BaseController {
         alert.showAndWait();
     }
 
+    private void onDataReceived(String data) {
+        serialController.parseData(data);
+    }
+
     @FXML
     void returnToMainBtn(ActionEvent rtn) {
-        System.out.println("Returning to launcher");
+        //System.out.println("Returning to launcher"); //Debug
         try {
             thrustStand.changeScene("fxml/Launcher.fxml");
         } catch (Exception e) {

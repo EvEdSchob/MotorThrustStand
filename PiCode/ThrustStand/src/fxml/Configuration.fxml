@@ -161,6 +161,8 @@
                                        <HBox spacing="15.0">
                                              <children>
                                                 <Button fx:id="calibrateCurrentZeroBtn" mnemonicParsing="false" text="Capture Zero Point" />
+                                                <Label text="Zero Point:" />
+                                                <Label fx:id="currentZeroLabel" text="Not calibrated" />
                                              </children>
                                        </HBox>
                                        <!-- Known Current Calibration -->

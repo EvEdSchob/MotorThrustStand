@@ -55,11 +55,11 @@ public class SerialController {
         serialPort.setParity(SerialPort.NO_PARITY);
 
         if(serialPort.openPort()){
-            System.out.println("Connection with " + serialPort.getSystemPortName() + " opened successfully!");
+            //System.out.println("Connection with " + serialPort.getSystemPortName() + " opened successfully!"); //Debug
             addDataListener();
             return true;
         } else {
-            System.out.println("Connection with " + serialPort.getSystemPortName() + " failed to open!");
+            //System.out.println("Connection with " + serialPort.getSystemPortName() + " failed to open!"); //Debug
             return false;
         }
     }
@@ -71,24 +71,6 @@ public class SerialController {
             System.out.println("Closed port: " + serialPort.getSystemPortName());
         }
     }
-
-    // public boolean sendData(String data){
-    //     if(serialPort != null && serialPort.isOpen()){
-    //         String dataToSend = data + "\n";
-    //         byte[] bytes = dataToSend.getBytes(StandardCharsets.UTF_8);
-    //         int bytesWritten = serialPort.writeBytes(bytes, bytes.length);
-    //         if(bytesWritten == -1){
-    //             System.err.println("Failed to write data to serial port");
-    //             return false;
-    //         } else {
-    //             System.out.println("Sent: " + dataToSend.trim());
-    //             return true;
-    //         }
-    //     } else {
-    //         System.err.println("Serial port is not open");
-    //         return false;
-    //     }
-    // }
 
     private boolean sendData(String data) {
         if(serialPort != null && serialPort.isOpen()) {

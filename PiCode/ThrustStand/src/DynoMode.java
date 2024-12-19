@@ -30,7 +30,7 @@ public class DynoMode extends BaseController {
 
     @FXML
     public void initialize() {
-        System.out.println("DynoMode initializing...");
+        //System.out.println("DynoMode initializing..."); //Debug
         
         // Initialize shared controls
         sharedElements.initializeControls(
@@ -84,7 +84,7 @@ public class DynoMode extends BaseController {
 
     @FXML
     void returnToMainBtn() {
-        System.out.println("Returning to launcher");
+        //System.out.println("Returning to launcher");  //Debug
         try {
             // Turn off motor before returning
             if (motorToggle.isSelected()) {

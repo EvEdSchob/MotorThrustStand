@@ -19,7 +19,7 @@ public class ThrustStand extends Application{
     private String css = getClass().getResource("/styles/styles.css").toExternalForm(); //Load Stylesheet
 
     public static void main(String[] args) {
-        System.out.println("Launching Thrust Stand..."); //Output a startup message to the terminal
+        //System.out.println("Launching Thrust Stand..."); //Debug
         launch(args);
     }
 

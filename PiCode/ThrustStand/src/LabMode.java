@@ -77,7 +77,7 @@ public class LabMode extends BaseController{
 
     @FXML
     void returnToMainBtn(ActionEvent rtn){
-        System.out.println("Returning to launcher");
+        //System.out.println("Returning to launcher");  //Debug
         try {
             // Turn off motor before returning
             if (motorToggle.isSelected()) {
