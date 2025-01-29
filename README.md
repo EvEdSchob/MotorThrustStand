@@ -1,13 +1,18 @@
 # MotorThrustStand
-This is the software component of a Raspberry Pi & Teensy 4.0 based thrust stand for testing brushless electric motors typically used for remote control airplanes, helicopters, and drones. The device uses a Teensy 4.0 to capture the raw data from the sensors listed below. The data is then passed to a Raspberry Pi 5 for processing and output to both a CSV file and an attached display. 
+This motor thrust stand is an open an extensible hardware testing platform for the evaluation of small electric propulsion systems such as those used in remote control airplanes, helicopters, and drones. It was developed for implementation and use within an existing wind tunnel in the unmanned aerial vehicle laboratory at Western Michigan University by myself and my senior design partner Joshua Kraeteur.
 
-## Sensors
-- Pitot Tube
+The completed project inludes: 
+
+- A JavaFX application comprising the user interface and data processing functionality
+- KiCAD PCB design files for construction of the data capture system
+- A TeensyDuino program for receiving UI commands and handling data capture and transmission
+- 3D Print files for the PCB enclosure as well as mounting hardware for the pitot tubes
+- A user manual with setup instructions and calibration proceedures
+  
+The system incorporates the following set of sensors:
+
+- Two Pitot Tubes
 - Voltage Sensor
 - Current Sensor
 - Tachometer
 - Load Cell
-
-
-## PCB
-The KiCAD project and Gerber files are included in the PCB folder.
