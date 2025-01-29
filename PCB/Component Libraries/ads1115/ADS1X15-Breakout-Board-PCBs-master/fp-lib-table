@@ -1,0 +1,4 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "Adafruit ADS1115 ADC STEMMA QT")(type "KiCad")(uri "$(KIPRJMOD)/Adafruit ADS1115 ADC STEMMA QT.pretty")(options "")(descr ""))
+)

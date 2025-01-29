@@ -1,0 +1,4 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "Adafruit ADS1115 ADC STEMMA QT-eagle-import")(type "KiCad")(uri "C:/Users/2022-WIN10-23/Documents/KiCad/Projects/Propulsion PCB/ads1115/ADS1X15-Breakout-Board-PCBs-master/Adafruit ADS1115 ADC STEMMA QT-eagle-import.kicad_sym")(options "")(descr ""))
+)
